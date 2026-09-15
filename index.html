@@ -202,18 +202,25 @@ html.is-loaded .loader{display:none}
   padding-inline:var(--container-pad);
   pointer-events:none;
 }
+/* Пігулка морфиться в картку: одна скляна поверхня, що росте вниз.
+   Радіус r-full → r-xl, меню розгортається всередині (misto.cafe). */
 .nav__inner{
   pointer-events:auto;
   max-width:calc(var(--container-max) - var(--container-pad)*2);
-  margin-inline:auto;height:var(--header-h);
-  display:flex;align-items:center;justify-content:space-between;
-  gap:var(--s-6);padding:0 var(--s-2) 0 var(--s-6);
+  margin-inline:auto;
   border-radius:var(--r-full);
   background:var(--glass-bg);
   -webkit-backdrop-filter:blur(var(--blur-size)) saturate(1.4);
   backdrop-filter:blur(var(--blur-size)) saturate(1.4);
   box-shadow:var(--shadow-float);
   position:relative;overflow:hidden;
+  transition:border-radius var(--dur) var(--ease);
+}
+html.menu-open .nav__inner{border-radius:var(--r-xl)}
+.nav__bar{
+  position:relative;height:var(--header-h);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:var(--s-6);padding:0 var(--s-2) 0 var(--s-6);
 }
 .nav__logo{
   font-family:var(--f-display);font-weight:400;font-size:1.25rem;
@@ -265,22 +272,30 @@ html.menu-open .nav__burger span:nth-child(1){transform:translateY(6.5px) rotate
 html.menu-open .nav__burger span:nth-child(2){opacity:0}
 html.menu-open .nav__burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 
-.menu{
-  position:fixed;inset:0;z-index:9100;background:var(--c-ink);
-  display:flex;flex-direction:column;justify-content:center;
-  padding:var(--s-24) var(--container-pad) var(--s-16);
-  clip-path:inset(0 0 100% 0);
-  visibility:hidden;
+/* Шухляда всередині пігулки. Висоту тягне GSAP (height:auto);
+   без GSAP клас просто розкриває її без анімації. */
+.menu{height:0;overflow:hidden}
+html:not(.js).menu-open .menu{height:auto}
+.menu__clip{overflow:hidden}
+.menu__list{
+  display:grid;gap:var(--s-1);
+  padding:var(--s-2) var(--s-4) var(--s-5);
+  text-align:center;
 }
-html.menu-open .menu{visibility:visible}
-html.menu-open{overflow:hidden}
+.menu__list li{overflow:hidden}
 .menu a{
-  display:block;padding:var(--s-3) 0;text-decoration:none;color:var(--c-sand);
-  font-family:var(--f-display);font-weight:400;font-size:var(--t-h2);
-  line-height:1.15;
+  display:flex;align-items:center;justify-content:center;
+  min-height:52px;padding:var(--s-2) var(--s-4);
+  border-radius:var(--r-full);
+  text-decoration:none;color:var(--c-ink);
+  font-family:var(--f-display);font-weight:400;
+  font-size:var(--t-h3);line-height:1.2;
+  transition:background var(--dur) var(--ease),color var(--dur) var(--ease);
 }
-.menu li{overflow:hidden}
+.menu a:hover,.menu a:focus-visible{background:rgba(33,33,33,.07)}
+.menu a.is-active{color:var(--c-signal-press)}
 .menu a span{display:block}
+@media (min-width:1024px){.nav__drawer{display:none}}
 
 /* ═══════════════════════════════════════════════════════════════════
    5 · C1 · КНОПКА  (у контенті рівно одна)
@@ -611,6 +626,8 @@ html:not(.js) .rule{transform:none}
   position:absolute;inset:0;z-index:-1;
   background:linear-gradient(180deg,rgba(33,33,33,.62),rgba(33,33,33,.92));
 }
+/* Паралакс-збірка вмісту футера всередині overflow:hidden (misto.cafe) */
+.foot__reveal{overflow:hidden}
 .foot__grid{display:flex;flex-direction:column;gap:var(--block-gap)}
 .foot h2{font-size:var(--t-display-2);line-height:.93;letter-spacing:-.02em;max-width:9ch}
 .foot__note{color:var(--c-sand-deep);font-size:var(--t-lead);max-width:34ch}
@@ -621,6 +638,25 @@ html:not(.js) .rule{transform:none}
   color:var(--c-mute);font-size:var(--t-caption);
 }
 .foot__org{color:var(--c-paper);font-size:var(--t-body-s)}
+
+/* ── Логотип-вордмарк: літери роз'єднані, збираються за скролом ──────── */
+.foot__mark{
+  margin-top:var(--s-20);
+  display:flex;justify-content:center;align-items:flex-end;
+  line-height:.82;
+}
+.foot__mark span{
+  display:inline-block;
+  font-family:var(--f-display);font-weight:400;
+  /* «Світлиця» в Poppins 400 = 3.91em завширшки (заміряно в зібраному стані).
+     19.4vw розраховано по найтіснішій смузі — 1280px, де паддинг уже 138px.
+     Стеля 18.4rem тримає слово в смузі 1164px, коли контейнер уперся в max-width. */
+  font-size:min(19.4vw,18.4rem);
+  letter-spacing:-.03em;
+  color:var(--c-sand);
+  will-change:transform;
+}
+@media (max-width:640px){.foot__mark{margin-top:var(--s-12)}}
 
 /* ═══════════════════════════════════════════════════════════════════
    14 · СТАНИ АНІМАЦІЇ (застосовуються лише коли JS+GSAP живі)
@@ -661,30 +697,36 @@ html.js .dirs__num{opacity:0}
 <!-- ─────────────────────────── C2 · НАВІГАЦІЯ ─────────────────────────── -->
 <header class="nav" id="top">
   <div class="nav__inner">
-    <a class="nav__logo" href="#top">Світлиця</a>
-    <nav aria-label="Основна навігація">
-      <ul class="nav__list">
-        <li><a class="nav__link" href="#space">Простір</a></li>
-        <li><a class="nav__link" href="#mission">Як це допомагає</a></li>
-        <li><a class="nav__link" href="#directions">Добрі справи</a></li>
-        <li><a class="nav__link" href="#trust">Прозорість</a></li>
-      </ul>
-    </nav>
-    <button class="nav__burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Меню">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="nav__progress" aria-hidden="true"></div>
+    <div class="nav__bar">
+      <a class="nav__logo" href="#top">Світлиця</a>
+      <nav aria-label="Основна навігація">
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#space">Простір</a></li>
+          <li><a class="nav__link" href="#mission">Як це допомагає</a></li>
+          <li><a class="nav__link" href="#directions">Добрі справи</a></li>
+          <li><a class="nav__link" href="#trust">Прозорість</a></li>
+        </ul>
+      </nav>
+      <button class="nav__burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav__progress" aria-hidden="true"></div>
+    </div>
+
+    <div class="nav__drawer">
+      <div class="menu" id="menu">
+        <div class="menu__clip">
+          <ul class="menu__list">
+            <li><a href="#space"><span>Простір</span></a></li>
+            <li><a href="#mission"><span>Як це допомагає</span></a></li>
+            <li><a href="#directions"><span>Добрі справи</span></a></li>
+            <li><a href="#trust"><span>Прозорість</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
-
-<div class="menu" id="menu">
-  <ul>
-    <li><a href="#space"><span>Простір</span></a></li>
-    <li><a href="#mission"><span>Як це допомагає</span></a></li>
-    <li><a href="#directions"><span>Добрі справи</span></a></li>
-    <li><a href="#trust"><span>Прозорість</span></a></li>
-  </ul>
-</div>
 
 <main id="main">
 
@@ -954,12 +996,23 @@ html.js .dirs__num{opacity:0}
   </div>
   <div class="foot__scrim" aria-hidden="true"></div>
 
-  <div class="l-container foot__grid">
-    <h2 class="js-split">Будь серед перших</h2>
-    <p class="foot__note reveal">Відкриваємось у Черкасах. Слідкуй за відкриттям.</p>
-    <div class="foot__meta reveal">
-      <span class="foot__org">Громадська організація «Світлиця»</span>
-      <span>Оновлено: 11.09.2026</span>
+  <div class="foot__reveal">
+   <div class="foot__inner">
+    <div class="l-container foot__grid">
+      <h2 class="js-split">Будь серед перших</h2>
+      <p class="foot__note reveal">Відкриваємось у Черкасах. Слідкуй за відкриттям.</p>
+      <div class="foot__meta reveal">
+        <span class="foot__org">Громадська організація «Світлиця»</span>
+        <span>Оновлено: 11.09.2026</span>
+      </div>
+    </div>
+   </div>
+  </div>
+
+  <!-- Логотип-вордмарк. Літери декоративні, назва вже озвучена вище. -->
+  <div class="l-container">
+    <div class="foot__mark" aria-hidden="true">
+      <span>С</span><span>в</span><span>і</span><span>т</span><span>л</span><span>и</span><span>ц</span><span>я</span>
     </div>
   </div>
 </footer>
@@ -981,27 +1034,42 @@ html.js .dirs__num{opacity:0}
     });
   });
 
-  /* ── Мобільне меню — теж без залежностей ───────────────────────────── */
+  /* ── Меню: пігулка морфиться в картку. CSS тягне 0fr→1fr і радіус,
+        JS лише перемикає клас і робить стагер пунктів. ────────────────── */
   var burger = document.querySelector('.nav__burger');
   var menu = document.getElementById('menu');
+  var menuWords = menu.querySelectorAll('a span');
+
   function setMenu(open){
     root.classList.toggle('menu-open', open);
     burger.setAttribute('aria-expanded', String(open));
-    if (window.gsap && !REDUCED){
-      gsap.to(menu, {clipPath: open ? 'inset(0% 0 0% 0)' : 'inset(0 0 100% 0)',
-                     duration:.5, ease:'power3.inOut'});
-      if (open) gsap.fromTo(menu.querySelectorAll('a span'),
-        {yPercent:110},{yPercent:0, duration:.5, stagger:.06, delay:.2, ease:'power3.out'});
+    if (window.gsap){
+      gsap.killTweensOf(menu);
+      if (open){
+        gsap.to(menu, {height:'auto', duration: REDUCED ? .01 : .5, ease:'power3.inOut'});
+        gsap.fromTo(menuWords, {yPercent: REDUCED ? 0 : 115, opacity:0},
+          {yPercent:0, opacity:1, duration: REDUCED ? .2 : .45,
+           stagger: REDUCED ? 0 : .05, delay: REDUCED ? 0 : .12, ease:'power3.out'});
+      } else {
+        gsap.to(menu, {height:0, duration: REDUCED ? .01 : .38, ease:'power3.in'});
+        gsap.to(menuWords, {yPercent: REDUCED ? 0 : 60, opacity:0,
+          duration: REDUCED ? .01 : .2, ease:'power2.in'});
+      }
     } else {
-      menu.style.clipPath = open ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)';
+      menu.style.height = open ? 'auto' : '0';
     }
+    if (window.ScrollTrigger) setTimeout(function(){ ScrollTrigger.refresh(); }, 650);
   }
   burger.addEventListener('click', function(){
-    setMenu(root.classList.contains('menu-open') === false);
+    setMenu(!root.classList.contains('menu-open'));
   });
   menu.addEventListener('click', function(e){ if (e.target.closest('a')) setMenu(false); });
   document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && root.classList.contains('menu-open')) setMenu(false);
+    if (e.key === 'Escape' && root.classList.contains('menu-open')){ setMenu(false); burger.focus(); }
+  });
+  /* клік повз пігулку закриває */
+  document.addEventListener('click', function(e){
+    if (root.classList.contains('menu-open') && !e.target.closest('.nav__inner')) setMenu(false);
   });
 
   /* ── Без GSAP: показуємо все як є ──────────────────────────────────── */
@@ -1172,7 +1240,37 @@ html.js .dirs__num{opacity:0}
   if (!REDUCED){
     gsap.fromTo('.foot__media', {yPercent:-8}, {yPercent:8, ease:'none',
       scrollTrigger:{trigger:'.foot', start:'top bottom', end:'bottom bottom', scrub:true}});
+
+    /* Вміст футера «збирається» знизу всередині overflow:hidden (misto.cafe) */
+    gsap.fromTo('.foot__inner', {yPercent:-22}, {yPercent:0, ease:'none',
+      scrollTrigger:{trigger:'.foot', start:'top bottom', end:'bottom bottom', scrub:.7}});
   }
+
+  /* ── Вордмарк: літери роз'єднані → збираються за скролом ──────────── */
+  (function(){
+    var mark = document.querySelector('.foot__mark');
+    if (!mark) return;
+    var L = gsap.utils.toArray(mark.children);
+    var mid = (L.length - 1) / 2;
+
+    if (REDUCED){
+      gsap.fromTo(L, {opacity:0}, {opacity:1, duration:.3, stagger:.03,
+        scrollTrigger:{trigger:mark, start:'top 92%'}});
+      return;
+    }
+
+    /* розліт детермінований: назовні від центру, через одну вгору/вниз */
+    gsap.fromTo(L, {
+      xPercent: function(i){ return (i - mid) * 62; },
+      yPercent: function(i){ return (i % 2 ? 1 : -1) * (46 + Math.abs(i - mid) * 17); },
+      rotate:   function(i){ return (i - mid) * -7; },
+      scale:    function(i){ return 1 + Math.abs(i - mid) * 0.06; },
+      opacity:  .18
+    }, {
+      xPercent:0, yPercent:0, rotate:0, scale:1, opacity:1, ease:'none',
+      scrollTrigger:{trigger:mark, start:'top bottom', end:'bottom 92%', scrub:.6}
+    });
+  })();
 
   /* ── Прогрес у пігулці шапки ──────────────────────────────────────── */
   gsap.to('.nav__progress', {scaleX:1, ease:'none',
