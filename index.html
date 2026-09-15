@@ -321,9 +321,15 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
   --btn-fs:1.5rem;
   color:var(--c-ink);letter-spacing:-.01em;margin-right:auto;
 }
-/* фірмовий знак ⊔ замість декоративної крапки */
+/* Фірмовий знак — літера Ц: чаша, ромб і виносний хвостик.
+   --nav-mark лишається висотою ЧАШІ. Хвостик — 17.4%% висоти гліфа, тому
+   svg береться в 1.2103 раза вищим, а margin-top у 0.21 від --nav-mark
+   зміщує його так, щоб чаша стала по центру слова, а хвостик звисав нижче
+   базової лінії — як у справжнього дескендера. */
 .nav__mark{
-  height:var(--nav-mark);width:auto;flex:none;color:var(--c-ink);
+  height:calc(var(--nav-mark) * 1.2103);
+  margin-top:calc(var(--nav-mark) * .21);
+  width:auto;flex:none;color:var(--c-ink);
   transition:transform var(--dur) var(--ease);
 }
 .nav__logo:hover .nav__mark{transform:translateY(-2px) scale(1.06)}
@@ -782,7 +788,7 @@ html.js .dirs__num{opacity:0}
   <div class="nav__inner u-blur">
     <div class="nav__bar">
       <a class="nav__logo f-btn f-btn--link f-btn--display" href="#top">
-        <svg class="nav__mark" viewBox="0 0 278.29 309.21" fill="currentColor" aria-hidden="true"><g transform="translate(-395.000,-1173.000)"><path d="M 395 1482.214844 L 395 1173 L 452.425781 1173 L 452.425781 1429.207031 L 615.867188 1429.207031 L 615.867188 1173 L 673.292969 1173 L 673.292969 1482.214844 Z M 395 1482.214844 "/><path d="M 488.496094 1359 L 533.214844 1314.285156 L 577.929688 1359 L 533.214844 1403.71875 Z M 488.496094 1359 "/></g></svg>
+        <svg class="nav__mark" viewBox="0 0 278.29 374.28" fill="currentColor" aria-hidden="true"><g transform="translate(-395.000,-1173.000)"><path d="M 395 1482.214844 L 395 1173 L 452.425781 1173 L 452.425781 1429.207031 L 615.867188 1429.207031 L 615.867188 1173 L 673.292969 1173 L 673.292969 1482.214844 Z M 395 1482.214844 "/><path d="M 488.496094 1359 L 533.214844 1314.285156 L 577.929688 1359 L 533.214844 1403.71875 Z M 488.496094 1359 "/><path d="M 510.24 1482.215 Q 512.5 1482.215 512.5 1495.5 L 512.5 1547.28 L 554.3 1547.28 L 554.3 1495.5 Q 554.3 1482.215 556.08 1482.215 Z"/></g></svg>
         Світлиця
       </a>
       <nav aria-label="Основна навігація">
