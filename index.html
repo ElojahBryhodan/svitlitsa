@@ -31,7 +31,8 @@
   /* скло — рецепт misto.cafe: колір + внутрішній волосяний глоу, без падаючої тіні */
   /* misto тримає .4; над нашим кадром це 3.96 для ink — .55 дає 5.28 ✅ */
   --blur-color:rgba(222,215,205,.55);
-  --blur-hover-color:rgba(66,34,35,.09);
+  --blur-hover-color:rgba(198,186,172,.64);
+  --btn-tint:rgba(53,27,27,.07);
   --blur-glow-color:rgba(255,252,247,.30);
   --glass-bg:var(--blur-color);
 
@@ -162,6 +163,54 @@ h3,.u-h3{font-size:var(--t-h3);line-height:1.3;letter-spacing:-.01em}
   text-transform:uppercase;font-weight:600}
 
 /* ═══════════════════════════════════════════════════════════════════
+   2b · C1 · СИСТЕМА КНОПОК
+   ═══════════════════════════════════════════════════════════════════ */
+/* Одна основа для всіх кнопок. Варіанти не чіпають властивості —
+   лише перевизначають змінні. Так само влаштовано .f-btn у misto.cafe. */
+.f-btn{
+  --btn-h:48px; --btn-px:var(--s-5); --btn-gap:12px;
+  --btn-fs:16px; --btn-fw:600; --btn-ff:var(--f-text);
+  --btn-bg:transparent; --btn-color:currentColor;
+  --btn-bd:transparent; --btn-bw:1px;
+  appearance:none;-webkit-appearance:none;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;vertical-align:middle;
+  height:var(--btn-h);padding:0 var(--btn-px);gap:var(--btn-gap);
+  font:var(--btn-fw) var(--btn-fs)/1.5 var(--btn-ff);
+  background-color:var(--btn-bg);color:var(--btn-color);
+  border:var(--btn-bw) solid var(--btn-bd);
+  border-radius:var(--r-full);
+  max-width:100%;text-decoration:none;cursor:pointer;
+  position:relative;z-index:1;
+  transition:background-color var(--dur) var(--ease),color var(--dur) var(--ease),
+             border-color var(--dur) var(--ease),opacity var(--dur) var(--ease);
+}
+@media (hover:hover){
+  a.f-btn:hover,button.f-btn:hover{
+    /* скляні кнопки темнішають тією ж змінною, якою малюється скло */
+    --blur-color:var(--blur-hover-color);
+    background-color:var(--btn-hover-bg,var(--btn-bg));
+    color:var(--btn-hover-color,var(--btn-color));
+    border-color:var(--btn-hover-bd,var(--btn-bd));
+  }
+}
+.f-btn:disabled,.f-btn.is-disabled{opacity:.5;pointer-events:none}
+
+/* варіанти — самі змінні, нічого більше */
+.f-btn--solid  {--btn-bg:var(--c-signal);--btn-color:var(--c-paper);
+                --btn-hover-bg:var(--c-signal-press)}
+.f-btn--surface{--btn-bg:var(--c-surface);--btn-color:var(--c-ink);
+                --btn-hover-bg:var(--c-surface-2)}
+.f-btn--ghost  {--btn-bd:currentColor;--btn-hover-bg:var(--btn-tint)}
+.f-btn--link   {--btn-hover-bg:var(--btn-tint)}
+.f-btn--sand   {--btn-bg:var(--c-sand);--btn-color:var(--c-ink);
+                --btn-hover-bg:var(--c-sand-deep)}
+/* форма й розмір */
+.f-btn--square {min-width:var(--btn-h);padding-inline:var(--s-2)}
+.f-btn--block  {width:100%}
+.f-btn--display{--btn-ff:var(--f-display);--btn-fw:400}
+
+/* ═══════════════════════════════════════════════════════════════════
    3 · ЗЕРНО · КУРСОР · SKIP-LINK · ЛОАДЕР
    ═══════════════════════════════════════════════════════════════════ */
 .grain{
@@ -194,9 +243,6 @@ h3,.u-h3{font-size:var(--t-h3);line-height:1.3;letter-spacing:-.01em}
 .skip{
   position:fixed;top:var(--header-offset);left:var(--s-5);z-index:9800;
   transform:translateY(-200%);
-  height:48px;padding:0 var(--s-5);border-radius:var(--r-full);
-  background:var(--c-signal);color:var(--c-paper);
-  font:600 16px/48px var(--f-text);text-decoration:none;
   transition:transform var(--dur) var(--ease);
 }
 .skip:focus{transform:translateY(0)}
@@ -255,11 +301,9 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
 }
 /* логотип ліворуч, margin-right:auto відтискає решту вправо (misto.cafe) */
 .nav__logo{
-  font-family:var(--f-display);font-weight:400;font-size:1.5rem;
-  color:var(--c-ink);text-decoration:none;letter-spacing:-.01em;
-  display:inline-flex;align-items:center;gap:10px;
-  height:var(--nav-btn-h);margin-right:auto;padding-inline:var(--s-2);
-  border-radius:var(--r-full);
+  --btn-h:var(--nav-btn-h); --btn-px:var(--s-2); --btn-gap:10px;
+  --btn-fs:1.5rem;
+  color:var(--c-ink);letter-spacing:-.01em;margin-right:auto;
 }
 /* фірмовий знак ⊔ замість декоративної крапки */
 .nav__mark{
@@ -271,15 +315,12 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
 /* Чотири пункти видно завжди. Нижче 1024 вони не влазять — там бургер. */
 .nav__list{display:none;align-items:center;gap:var(--s-1);margin-right:var(--s-2)}
 @media (min-width:1024px){.nav__list{display:flex}}
-/* пункт як f-btn: пігулка, на hover наливається скляним відтінком */
+/* пункт — той самий .f-btn, лише інші змінні */
 .nav__link{
-  position:relative;display:inline-flex;align-items:center;
-  height:var(--nav-btn-h);padding:0 var(--nav-btn-px);border-radius:var(--r-full);
-  font:400 var(--nav-btn-fs)/1 var(--f-text);color:var(--c-ink);text-decoration:none;
-  white-space:nowrap;
-  transition:color var(--dur) var(--ease),background-color var(--dur) var(--ease);
+  --btn-h:var(--nav-btn-h); --btn-px:var(--nav-btn-px);
+  --btn-fs:var(--nav-btn-fs); --btn-fw:400;
+  color:var(--c-ink);white-space:nowrap;
 }
-.nav__link:hover{background-color:var(--blur-hover-color)}
 .nav__link.is-active{color:var(--c-signal-press)}
 .nav__link.is-active::after{
   content:"";position:absolute;left:50%;bottom:6px;translate:-50% 0;
@@ -291,13 +332,7 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
   background:var(--c-signal);transform:scaleX(0);transform-origin:0 50%;
 }
 
-.nav__burger{
-  width:48px;height:48px;flex:none;border:0;padding:0;cursor:pointer;
-  border-radius:var(--r-full);background:var(--c-signal);
-  display:grid;place-items:center;
-  transition:background-color var(--dur) var(--ease);
-}
-.nav__burger:hover{background:rgba(248,88,48,.72)}
+.nav__burger{--btn-h:48px;--btn-gap:0;flex-direction:column}
 /* від 1024 усі чотири пункти в барі — бургер і шухляда не потрібні */
 @media (min-width:1024px){.nav__burger,.nav__drawer{display:none}}
 .nav__burger span{
@@ -320,31 +355,16 @@ html:not(.js).menu-open .menu{height:auto}
   text-align:center;
 }
 .menu__list li{overflow:hidden}
-.menu a{
-  display:flex;align-items:center;justify-content:center;
-  min-height:52px;padding:var(--s-2) var(--s-4);
-  border-radius:var(--r-full);
-  text-decoration:none;color:var(--c-ink);
-  font-family:var(--f-display);font-weight:400;
-  font-size:var(--t-h3);line-height:1.2;
-  transition:background var(--dur) var(--ease),color var(--dur) var(--ease);
-}
-.menu a:hover,.menu a:focus-visible{background:rgba(53,27,27,.08)}
+.menu a{--btn-h:52px;--btn-fs:var(--t-h3);color:var(--c-ink)}
 .menu a.is-active{color:var(--c-signal-press)}
 .menu a span{display:block}
 
 /* ═══════════════════════════════════════════════════════════════════
    5 · C1 · КНОПКА  (у контенті рівно одна)
    ═══════════════════════════════════════════════════════════════════ */
-.btn{
-  height:48px;padding:0 var(--s-5) 0 var(--s-5);
-  border:0;border-radius:var(--r-full);cursor:pointer;
-  font:600 16px/1.5 var(--f-text);
-  display:inline-flex;align-items:center;gap:12px;
-  background:var(--c-surface);color:var(--c-ink);text-decoration:none;
-  transition:background var(--dur) var(--ease),color var(--dur) var(--ease);
-  will-change:transform;
-}
+
+/* CTA: пігулка surface + signal-крапка (C1 Primary) */
+.btn{will-change:transform}
 .btn__dot{
   width:32px;height:32px;border-radius:var(--r-full);
   background:var(--c-signal);flex:none;
@@ -710,7 +730,7 @@ html.js .dirs__num{opacity:0}
 
 <body>
 
-<a class="skip" href="#main">До змісту</a>
+<a class="skip f-btn f-btn--solid" href="#main">До змісту</a>
 
 <div class="grain" aria-hidden="true"></div>
 <div class="cursor" aria-hidden="true"></div>
@@ -725,19 +745,19 @@ html.js .dirs__num{opacity:0}
 <header class="nav" id="top">
   <div class="nav__inner u-blur">
     <div class="nav__bar">
-      <a class="nav__logo" href="#top">
+      <a class="nav__logo f-btn f-btn--link f-btn--display" href="#top">
         <svg class="nav__mark" viewBox="0 0 278.29 309.21" fill="currentColor" aria-hidden="true"><g transform="translate(-395.000,-1173.000)"><path d="M 395 1482.214844 L 395 1173 L 452.425781 1173 L 452.425781 1429.207031 L 615.867188 1429.207031 L 615.867188 1173 L 673.292969 1173 L 673.292969 1482.214844 Z M 395 1482.214844 "/><path d="M 488.496094 1359 L 533.214844 1314.285156 L 577.929688 1359 L 533.214844 1403.71875 Z M 488.496094 1359 "/></g></svg>
         Світлиця
       </a>
       <nav aria-label="Основна навігація">
         <ul class="nav__list">
-          <li><a class="nav__link" href="#space">Простір</a></li>
-          <li><a class="nav__link" href="#mission">Як це допомагає</a></li>
-          <li><a class="nav__link" href="#directions">Добрі справи</a></li>
-          <li><a class="nav__link" href="#trust">Прозорість</a></li>
+          <li><a class="nav__link f-btn f-btn--link" href="#space">Простір</a></li>
+          <li><a class="nav__link f-btn f-btn--link" href="#mission">Як це допомагає</a></li>
+          <li><a class="nav__link f-btn f-btn--link" href="#directions">Добрі справи</a></li>
+          <li><a class="nav__link f-btn f-btn--link" href="#trust">Прозорість</a></li>
         </ul>
       </nav>
-      <button class="nav__burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Меню">
+      <button class="nav__burger f-btn f-btn--square f-btn--solid" type="button" aria-expanded="false" aria-controls="menu" aria-label="Меню">
         <span></span><span></span><span></span>
       </button>
       <div class="nav__progress" aria-hidden="true"></div>
@@ -747,10 +767,10 @@ html.js .dirs__num{opacity:0}
       <div class="menu" id="menu">
         <div class="menu__clip">
           <ul class="menu__list">
-            <li><a href="#space"><span>Простір</span></a></li>
-            <li><a href="#mission"><span>Як це допомагає</span></a></li>
-            <li><a href="#directions"><span>Добрі справи</span></a></li>
-            <li><a href="#trust"><span>Прозорість</span></a></li>
+            <li><a class="f-btn f-btn--link f-btn--block f-btn--display" href="#space"><span>Простір</span></a></li>
+            <li><a class="f-btn f-btn--link f-btn--block f-btn--display" href="#mission"><span>Як це допомагає</span></a></li>
+            <li><a class="f-btn f-btn--link f-btn--block f-btn--display" href="#directions"><span>Добрі справи</span></a></li>
+            <li><a class="f-btn f-btn--link f-btn--block f-btn--display" href="#trust"><span>Прозорість</span></a></li>
           </ul>
         </div>
       </div>
@@ -779,7 +799,7 @@ html.js .dirs__num{opacity:0}
     </div>
 
     <div class="hero__foot">
-      <a class="btn js-magnetic reveal" href="#mission">
+      <a class="btn f-btn f-btn--surface js-magnetic reveal" href="#mission">
         Дізнатися, як це допомагає
         <span class="btn__dot" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
