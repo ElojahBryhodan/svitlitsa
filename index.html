@@ -524,8 +524,12 @@ html:not(.js) .rule{transform:none}
   transition:transform var(--dur) var(--ease);
 }
 .photo-offset--forest::before{background:var(--c-forest);transform:rotate(2.4deg)}
+/* height:auto обов'язковий: атрибути width/height на <img> лягають у
+   presentational hints і дають використану height:800px. Коли обидва
+   розміри вже визначені, aspect-ratio ігнорується — і кадр ставав
+   334×800 замість 3:2. */
 .photo-offset img{
-  position:relative;z-index:1;display:block;width:100%;
+  position:relative;z-index:1;display:block;width:100%;height:auto;
   aspect-ratio:3/2;object-fit:cover;border-radius:var(--r-md);
   transition:transform var(--dur-slow) var(--ease),filter var(--dur-slow) var(--ease);
 }
