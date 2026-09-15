@@ -26,7 +26,6 @@
   --c-ink:#3E2B27;        --c-paper:#FCFAF7;
   --c-deep:#5A3E38;
   --c-sand:#E7DDD1;       --c-signal:#E2603A;
-  --c-forest:#5E6A45;
   --c-surface:#F5F1EB;    --c-surface-2:#ECE5DB;
   --c-graphite:#6E5A53;   --c-mute:#C6BAB2;   /* mute живе тільки на темному */
   --c-line:#E5DDD3;       --c-rule:#3E2B27;
@@ -154,10 +153,8 @@ a{color:inherit}
    один на сторінку, просто звучить тихіше. */
 .t-signal{background:var(--c-signal-soft);color:var(--c-ink)}
 /* ink на signal-soft = 10.4 ✅, graphite = 5.05 ✅.
-   sand допускається лише там, де під ним forest/deep (mega-цифра, картки). */
+   sand допускається лише там, де під ним deep (mega-цифра, картки). */
 .t-signal h1,.t-signal h2,.t-signal h3{color:var(--c-ink)}
-.t-forest{background:var(--c-forest);color:var(--c-paper)}
-.t-forest h1,.t-forest h2,.t-forest h3{color:var(--c-sand)}
 .t-ink{background:var(--c-deep);color:var(--c-paper)}
 .t-ink h1,.t-ink h2,.t-ink h3{color:var(--c-sand)}
 
@@ -523,7 +520,7 @@ html:not(.js) .rule{transform:none}
   background:var(--c-signal);transform:rotate(-2deg);z-index:0;
   transition:transform var(--dur) var(--ease);
 }
-.photo-offset--forest::before{background:var(--c-forest);transform:rotate(2.4deg)}
+.photo-offset--deep::before{background:var(--c-deep);transform:rotate(2.4deg)}
 /* height:auto обов'язковий: атрибути width і height на картинці лягають
    у presentational hints і дають використану height:800px. Коли обидва
    розміри вже визначені, aspect-ratio ігнорується — і кадр ставав
@@ -596,11 +593,11 @@ html:not(.js) .rule{transform:none}
   position:relative;display:inline-flex;align-items:center;justify-content:center;
   font-size:var(--t-mega);isolation:isolate;
 }
-/* §9 «великий круг» forest — тримає sand-цифру (8.35 ✅).
+/* §9 «великий круг» — тримає sand-цифру (sand на deep = 7.18 ✅).
    Розмір в em від mega, тому на всіх брейкпоїнтах не дістає до H2. */
 .dirs__circle{
   position:absolute;z-index:-1;border-radius:var(--r-full);
-  background:var(--c-forest);
+  background:var(--c-deep);
   width:1.05em;height:1.05em;
   left:50%;top:50%;translate:-50% -50%;
 }
@@ -899,7 +896,7 @@ html.js .dirs__num{opacity:0}
       </article>
 
       <article class="space__card space__card--b reveal">
-        <div class="photo-offset photo-offset--forest">
+        <div class="photo-offset photo-offset--deep">
           <img src="assets/images/work-concept-1200.webp"
                srcset="assets/images/work-concept-600.webp 600w,
                        assets/images/work-concept-1200.webp 1200w"
