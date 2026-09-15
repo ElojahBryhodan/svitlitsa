@@ -421,10 +421,12 @@ html:not(.js) .rule{transform:none}
 .hero__media img{width:100%;height:100%;object-fit:cover;object-position:60% 45%}
 .hero__scrim{
   position:absolute;inset:0;z-index:-1;
-  /* P1 затемнення посилене знизу: текст стоїть унизу кадру (§11 > §8-P1) */
+  /* P1 затемнення посилене знизу: текст стоїть унизу кадру (§11 > §8-P1).
+     Колір скриму — маруна, десатурована з 32%% до 14%% при сталій
+     люмінантності, тому контрасти не змінились, а червоний налив удвічі слабший. */
   background:
-    linear-gradient(180deg,rgba(66,34,35,.44) 0%,rgba(66,34,35,.32) 34%,
-                    rgba(66,34,35,.74) 74%,rgba(66,34,35,.94) 100%);
+    linear-gradient(180deg,rgba(53,40,40,.44) 0%,rgba(53,40,40,.32) 34%,
+                    rgba(53,40,40,.74) 74%,rgba(53,40,40,.94) 100%);
 }
 .hero__inner{display:flex;flex-direction:column;gap:var(--block-gap)}
 .hero__title{color:var(--c-sand);max-width:16ch}
@@ -682,7 +684,7 @@ html:not(.js) .rule{transform:none}
 }
 .foot__scrim{
   position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(180deg,rgba(66,34,35,.64),rgba(66,34,35,.93));
+  background:linear-gradient(180deg,rgba(53,40,40,.64),rgba(53,40,40,.93));
 }
 /* Паралакс-збірка вмісту футера всередині overflow:hidden (misto.cafe) */
 .foot__reveal{overflow:hidden}
