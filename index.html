@@ -27,8 +27,12 @@
   --c-signal-press:#C93D0F; --c-sand-deep:#C9BE90;
   --c-alert:#ED2024;
   --c-selection:rgba(244,78,20,.2);
-  /* скло шапки: альфа піднята з .4 до .72 — §11 вимагає 4.5:1 над будь-яким кадром hero */
-  --glass-bg:hsla(24,6%,83%,.72);
+  /* скло — рецепт misto.cafe: колір + внутрішній волосяний глоу, без падаючої тіні */
+  /* misto тримає .4; над нашим кадром це 3.96 для ink — .55 дає 5.28 ✅ */
+  --blur-color:hsla(24,6%,83%,.55);
+  --blur-hover-color:hsla(24,5%,64%,.3);
+  --blur-glow-color:hsla(60,9%,98%,.25);
+  --glass-bg:var(--blur-color);
 
   /* типографіка */
   --f-display:"Poppins","Sofia Pro",ui-sans-serif,system-ui,sans-serif;
@@ -74,6 +78,8 @@
   --container-pad:48px; --section-py:64px;
   --block-gap:48px; --h2-gap:40px; --hero-top:96px;
 }}
+/* misto тримає --header-inner-height 4rem на широких екранах */
+@media (min-width:1024px){:root{--header-h:64px}}
 @media (min-width:1280px){:root{
   --container-pad:138px; --section-py:96px;
   --block-gap:64px; --h2-gap:48px; --hero-top:144px;
@@ -202,31 +208,41 @@ html.is-loaded .loader{display:none}
   padding-inline:var(--container-pad);
   pointer-events:none;
 }
-/* Пігулка морфиться в картку: одна скляна поверхня, що росте вниз.
-   Радіус r-full → r-xl, меню розгортається всередині (misto.cafe). */
+/* Скло misto.cafe: ::before із backdrop-filter, колір і внутрішній волосяний
+   глоу. Падаючої тіні немає — глибину дає лише глоу по внутрішньому краю. */
+.u-blur{position:relative}
+.u-blur::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  border-radius:inherit;
+  -webkit-backdrop-filter:blur(var(--blur-size));
+  backdrop-filter:blur(var(--blur-size));
+  background-color:var(--blur-color);
+  box-shadow:inset 0 0 1px var(--blur-glow-color);
+  transition:background-color var(--dur) var(--ease);
+}
+
+/* Пігулка морфиться в картку: одна скляна поверхня, що росте вниз. */
 .nav__inner{
   pointer-events:auto;
   max-width:calc(var(--container-max) - var(--container-pad)*2);
   margin-inline:auto;
-  border-radius:var(--r-full);
-  background:var(--glass-bg);
-  -webkit-backdrop-filter:blur(var(--blur-size)) saturate(1.4);
-  backdrop-filter:blur(var(--blur-size)) saturate(1.4);
-  box-shadow:var(--shadow-float);
-  position:relative;overflow:hidden;
+  border-radius:calc(var(--header-h) / 2);
+  overflow:hidden;
   transition:border-radius var(--dur) var(--ease);
 }
 html.menu-open .nav__inner{border-radius:var(--r-xl)}
 .nav__bar{
   position:relative;height:var(--header-h);
-  display:flex;align-items:center;justify-content:space-between;
-  gap:var(--s-6);padding:0 var(--s-2) 0 var(--s-6);
+  display:flex;align-items:center;
+  gap:var(--s-3);padding:0 var(--s-2) 0 var(--s-4);
 }
+/* логотип ліворуч, margin-right:auto відтискає решту вправо (misto.cafe) */
 .nav__logo{
-  font-family:var(--f-display);font-weight:400;font-size:1.25rem;
+  font-family:var(--f-display);font-weight:400;font-size:1.5rem;
   color:var(--c-ink);text-decoration:none;letter-spacing:-.01em;
   display:inline-flex;align-items:center;gap:10px;
-  height:44px;
+  height:44px;margin-right:auto;padding-inline:var(--s-2);
+  border-radius:var(--r-full);
 }
 .nav__logo::before{
   content:"";width:10px;height:10px;border-radius:var(--r-full);
@@ -235,22 +251,22 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
 }
 .nav__logo:hover::before{transform:scale(1.7)}
 
-.nav__list{display:none;align-items:center;gap:var(--s-1);margin-right:var(--s-4)}
+.nav__list{display:none;align-items:center;gap:var(--s-1);margin-right:var(--s-2)}
 @media (min-width:1024px){.nav__list{display:flex}}
+/* пункт як f-btn: пігулка, на hover наливається скляним відтінком */
 .nav__link{
   position:relative;display:inline-flex;align-items:center;
-  height:44px;padding:0 14px;border-radius:var(--r-full);
+  height:44px;padding:0 16px;border-radius:var(--r-full);
   font:600 15px/1 var(--f-text);color:var(--c-ink);text-decoration:none;
-  white-space:nowrap;transition:color var(--dur) var(--ease);
+  white-space:nowrap;
+  transition:color var(--dur) var(--ease),background-color var(--dur) var(--ease);
 }
-.nav__link::after{
-  content:"";position:absolute;left:14px;right:14px;bottom:11px;height:1px;
-  background:currentColor;transform:scaleX(0);transform-origin:0 50%;
-  transition:transform var(--dur) var(--ease);
-}
-.nav__link:hover::after{transform:scaleX(1)}
+.nav__link:hover{background-color:var(--blur-hover-color)}
 .nav__link.is-active{color:var(--c-signal-press)}
-.nav__link.is-active::after{transform:scaleX(1)}
+.nav__link.is-active::after{
+  content:"";position:absolute;left:50%;bottom:6px;translate:-50% 0;
+  width:5px;height:5px;border-radius:var(--r-full);background:var(--c-signal);
+}
 
 .nav__progress{
   position:absolute;left:0;bottom:0;height:2px;width:100%;
@@ -261,7 +277,9 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
   width:48px;height:48px;flex:none;border:0;padding:0;cursor:pointer;
   border-radius:var(--r-full);background:var(--c-signal);
   display:grid;place-items:center;
+  transition:background-color var(--dur) var(--ease);
 }
+.nav__burger:hover{background:rgba(244,78,20,.7)}
 @media (min-width:1024px){.nav__burger{display:none}}
 .nav__burger span{
   display:block;width:18px;height:1.5px;background:var(--c-paper);
@@ -696,7 +714,7 @@ html.js .dirs__num{opacity:0}
 
 <!-- ─────────────────────────── C2 · НАВІГАЦІЯ ─────────────────────────── -->
 <header class="nav" id="top">
-  <div class="nav__inner">
+  <div class="nav__inner u-blur">
     <div class="nav__bar">
       <a class="nav__logo" href="#top">Світлиця</a>
       <nav aria-label="Основна навігація">
