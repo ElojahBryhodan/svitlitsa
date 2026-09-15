@@ -1,0 +1,1237 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Світлиця — кав’ярня і коворкінг у Черкасах</title>
+<meta name="description" content="Світлиця — кав’ярня і коворкінг у Черкасах, які створює громадська організація. Твоя кава чи робочий день тут підтримують її справу.">
+<meta name="theme-color" content="#212121">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400&family=Raleway:wght@400;600;700&display=swap">
+<link rel="preload" as="image" href="assets/images/cafe-concept-1536.webp">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   1 · ТОКЕНИ  (§13 дизайн-системи)
+   ═══════════════════════════════════════════════════════════════════ */
+:root{
+  /* колір */
+  --c-ink:#212121;        --c-paper:#FFFFFF;
+  --c-sand:#E0D8B5;       --c-signal:#F44E14;
+  --c-forest:#253D13;
+  --c-surface:#F5F5F4;    --c-surface-2:#E7E5E4;
+  --c-graphite:#4F4F4F;   --c-mute:#A8A29E;
+  --c-line:#D2D2D7;       --c-rule:#212121;
+  --c-signal-press:#C93D0F; --c-sand-deep:#C9BE90;
+  --c-alert:#ED2024;
+  --c-selection:rgba(244,78,20,.2);
+  /* скло шапки: альфа піднята з .4 до .72 — §11 вимагає 4.5:1 над будь-яким кадром hero */
+  --glass-bg:hsla(24,6%,83%,.72);
+
+  /* типографіка */
+  --f-display:"Poppins","Sofia Pro",ui-sans-serif,system-ui,sans-serif;
+  --f-text:"Raleway",ui-sans-serif,system-ui,sans-serif;
+  --t-display-1:clamp(2.75rem,8vw,7.5rem);
+  --t-display-2:clamp(2.25rem,5.4vw,4.875rem);
+  --t-mega:clamp(6rem,25vw,22.5rem);
+  --t-h1:clamp(2rem,3.4vw,3rem);
+  --t-h2:clamp(1.625rem,2.5vw,2.25rem);
+  --t-h3:1.75rem; --t-h4:1.5rem;
+  --t-lead:clamp(1.125rem,1.7vw,1.5rem);
+  --t-body:clamp(1rem,1.25vw,1.125rem);
+  --t-body-s:1rem; --t-caption:.875rem; --t-overline:.75rem;
+
+  /* простір */
+  --s-1:4px;  --s-2:8px;  --s-3:12px; --s-4:16px; --s-5:20px;
+  --s-6:24px; --s-8:32px; --s-10:40px;--s-12:48px;--s-16:64px;
+  --s-20:80px;--s-24:96px;--s-32:128px;--s-40:160px;
+  --container-max:1440px;
+  --container-pad:20px;
+  --section-py:48px;
+  --block-gap:32px;    /* між блоками в секції */
+  --h2-gap:32px;       /* H2 → контент */
+  --hero-top:72px;
+  --header-h:56px; --header-offset:8px;
+
+  /* форма */
+  --r-xs:4px; --r-sm:6px; --r-md:12px;
+  --r-lg:24px; --r-xl:40px; --r-full:9999px;
+  --blur-size:30px;
+  --shadow-float:0 8px 32px rgba(0,0,0,.08);
+  --outline-width:2px; --outline-offset:4px;
+
+  /* моушн */
+  --dur:.3s; --dur-slow:.6s;
+  --ease:cubic-bezier(.25,.1,.25,1);
+
+  /* маски */
+  --clip-quad-a:polygon(2% 6%,97% 0%,100% 92%,5% 100%);
+  --clip-quad-b:polygon(0% 3%,94% 7%,100% 96%,6% 91%);
+}
+@media (min-width:640px){:root{
+  --container-pad:48px; --section-py:64px;
+  --block-gap:48px; --h2-gap:40px; --hero-top:96px;
+}}
+@media (min-width:1280px){:root{
+  --container-pad:138px; --section-py:96px;
+  --block-gap:64px; --h2-gap:48px; --hero-top:144px;
+}}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2 · БАЗА
+   ═══════════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html:focus-within{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--c-paper);color:var(--c-ink);
+  font-family:var(--f-text);font-weight:400;
+  font-size:var(--t-body);line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+a{color:inherit}
+::selection{background:var(--c-selection)}
+
+:focus-visible{
+  outline:var(--outline-width) solid var(--c-signal);
+  outline-offset:var(--outline-offset);
+  border-radius:var(--r-xs);
+}
+.t-dark :focus-visible,.t-ink :focus-visible{outline-color:var(--c-sand)}
+.t-signal :focus-visible{outline-color:var(--c-ink)}
+
+.l-container{max-width:var(--container-max);margin-inline:auto;padding-inline:var(--container-pad)}
+.c-section{padding-block:var(--section-py);position:relative}
+
+/* теми */
+.t-light {background:var(--c-paper); color:var(--c-ink)}
+.t-light  h1,.t-light  h2,.t-light  h3{color:var(--c-ink)}
+.t-dark  {background:var(--c-ink);   color:var(--c-paper)}
+.t-dark   h1,.t-dark   h2,.t-dark   h3{color:var(--c-sand)}
+.t-signal{background:var(--c-signal);color:var(--c-ink)}
+/* §2.3: sand на signal = 2.47 ⛔. Заголовки signal-секції — ink (4.56 ✅).
+   sand допускається лише там, де під ним forest/ink (mega-цифра, картки). */
+.t-signal h1,.t-signal h2,.t-signal h3{color:var(--c-ink)}
+.t-forest{background:var(--c-forest);color:var(--c-paper)}
+.t-forest h1,.t-forest h2,.t-forest h3{color:var(--c-sand)}
+.t-ink{background:var(--c-ink);color:var(--c-paper)}
+.t-ink h1,.t-ink h2,.t-ink h3{color:var(--c-sand)}
+
+/* шкала */
+.u-display-1{font-size:var(--t-display-1);line-height:1.15;letter-spacing:-.01em}
+.u-display-2{font-size:var(--t-display-2);line-height:.93;letter-spacing:-.02em}
+.u-mega{font-size:var(--t-mega);line-height:.8;letter-spacing:-.04em}
+h2,.u-h2{font-size:var(--t-h2);line-height:1.15}
+h3,.u-h3{font-size:var(--t-h3);line-height:1.25}
+.u-h4{font-family:var(--f-text);font-weight:600;font-size:var(--t-h4);line-height:1.3}
+.u-lead{font-size:var(--t-lead);line-height:1.5;max-width:26ch}
+.u-body{font-size:var(--t-body);line-height:1.55;max-width:68ch}
+.u-body-s{font-size:var(--t-body-s);line-height:1.5}
+.u-caption{font-size:var(--t-caption);line-height:1.45}
+.u-overline{font-size:var(--t-overline);line-height:1.2;letter-spacing:.08em;
+  text-transform:uppercase;font-weight:600}
+
+/* ═══════════════════════════════════════════════════════════════════
+   3 · ЗЕРНО · КУРСОР · SKIP-LINK · ЛОАДЕР
+   ═══════════════════════════════════════════════════════════════════ */
+.grain{
+  position:fixed;inset:-150%;z-index:9000;pointer-events:none;
+  opacity:.09;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainShift 700ms steps(1) infinite;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}      20%{transform:translate(-3%,2%)}
+  40%{transform:translate(2%,-3%)}  60%{transform:translate(-2%,-2%)}
+  80%{transform:translate(3%,1%)}   100%{transform:translate(0,0)}
+}
+
+.cursor,.cursor-ring{
+  position:fixed;top:0;left:0;z-index:9500;pointer-events:none;
+  border-radius:var(--r-full);opacity:0;
+  mix-blend-mode:difference;will-change:transform;
+}
+.cursor{width:8px;height:8px;background:var(--c-signal);margin:-4px 0 0 -4px}
+.cursor-ring{
+  width:38px;height:38px;margin:-19px 0 0 -19px;
+  border:1px solid var(--c-signal);
+  transition:width var(--dur) var(--ease),height var(--dur) var(--ease),
+             margin var(--dur) var(--ease),background var(--dur) var(--ease);
+}
+.cursor-ring.is-hot{width:58px;height:58px;margin:-29px 0 0 -29px;background:rgba(244,78,20,.16)}
+@media (hover:none),(pointer:coarse){.cursor,.cursor-ring{display:none}}
+
+.skip{
+  position:fixed;top:var(--header-offset);left:var(--s-5);z-index:9800;
+  transform:translateY(-200%);
+  height:48px;padding:0 var(--s-5);border-radius:var(--r-full);
+  background:var(--c-signal);color:var(--c-paper);
+  font:600 16px/48px var(--f-text);text-decoration:none;
+  transition:transform var(--dur) var(--ease);
+}
+.skip:focus{transform:translateY(0)}
+
+.loader{
+  position:fixed;inset:0;z-index:9700;background:var(--c-ink);
+  display:grid;place-items:center;
+}
+.loader__mark{overflow:hidden}
+.loader__mark span{
+  display:block;font-family:var(--f-display);font-weight:400;
+  font-size:clamp(2rem,6vw,4rem);letter-spacing:-.01em;color:var(--c-sand);
+  transform:translateY(105%);
+}
+.loader__bar{
+  position:absolute;left:0;bottom:0;height:2px;width:100%;
+  background:var(--c-signal);transform:scaleX(0);transform-origin:0 50%;
+}
+html.is-loaded .loader{display:none}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4 · C2 · НАВІГАЦІЯ
+   ═══════════════════════════════════════════════════════════════════ */
+.nav{
+  position:fixed;top:var(--header-offset);left:0;right:0;z-index:9200;
+  padding-inline:var(--container-pad);
+  pointer-events:none;
+}
+.nav__inner{
+  pointer-events:auto;
+  max-width:calc(var(--container-max) - var(--container-pad)*2);
+  margin-inline:auto;height:var(--header-h);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:var(--s-6);padding:0 var(--s-2) 0 var(--s-6);
+  border-radius:var(--r-full);
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--blur-size)) saturate(1.4);
+  backdrop-filter:blur(var(--blur-size)) saturate(1.4);
+  box-shadow:var(--shadow-float);
+  position:relative;overflow:hidden;
+}
+.nav__logo{
+  font-family:var(--f-display);font-weight:400;font-size:1.25rem;
+  color:var(--c-ink);text-decoration:none;letter-spacing:-.01em;
+  display:inline-flex;align-items:center;gap:10px;
+  height:44px;
+}
+.nav__logo::before{
+  content:"";width:10px;height:10px;border-radius:var(--r-full);
+  background:var(--c-signal);flex:none;
+  transition:transform var(--dur) var(--ease);
+}
+.nav__logo:hover::before{transform:scale(1.7)}
+
+.nav__list{display:none;align-items:center;gap:var(--s-1);margin-right:var(--s-4)}
+@media (min-width:1024px){.nav__list{display:flex}}
+.nav__link{
+  position:relative;display:inline-flex;align-items:center;
+  height:44px;padding:0 14px;border-radius:var(--r-full);
+  font:600 15px/1 var(--f-text);color:var(--c-ink);text-decoration:none;
+  white-space:nowrap;transition:color var(--dur) var(--ease);
+}
+.nav__link::after{
+  content:"";position:absolute;left:14px;right:14px;bottom:11px;height:1px;
+  background:currentColor;transform:scaleX(0);transform-origin:0 50%;
+  transition:transform var(--dur) var(--ease);
+}
+.nav__link:hover::after{transform:scaleX(1)}
+.nav__link.is-active{color:var(--c-signal-press)}
+.nav__link.is-active::after{transform:scaleX(1)}
+
+.nav__progress{
+  position:absolute;left:0;bottom:0;height:2px;width:100%;
+  background:var(--c-signal);transform:scaleX(0);transform-origin:0 50%;
+}
+
+.nav__burger{
+  width:48px;height:48px;flex:none;border:0;padding:0;cursor:pointer;
+  border-radius:var(--r-full);background:var(--c-signal);
+  display:grid;place-items:center;
+}
+@media (min-width:1024px){.nav__burger{display:none}}
+.nav__burger span{
+  display:block;width:18px;height:1.5px;background:var(--c-paper);
+  transition:transform var(--dur) var(--ease),opacity var(--dur) var(--ease);
+}
+.nav__burger span+span{margin-top:5px}
+html.menu-open .nav__burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+html.menu-open .nav__burger span:nth-child(2){opacity:0}
+html.menu-open .nav__burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+.menu{
+  position:fixed;inset:0;z-index:9100;background:var(--c-ink);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--s-24) var(--container-pad) var(--s-16);
+  clip-path:inset(0 0 100% 0);
+  visibility:hidden;
+}
+html.menu-open .menu{visibility:visible}
+html.menu-open{overflow:hidden}
+.menu a{
+  display:block;padding:var(--s-3) 0;text-decoration:none;color:var(--c-sand);
+  font-family:var(--f-display);font-weight:400;font-size:var(--t-h2);
+  line-height:1.15;
+}
+.menu li{overflow:hidden}
+.menu a span{display:block}
+
+/* ═══════════════════════════════════════════════════════════════════
+   5 · C1 · КНОПКА  (у контенті рівно одна)
+   ═══════════════════════════════════════════════════════════════════ */
+.btn{
+  height:48px;padding:0 var(--s-5) 0 var(--s-5);
+  border:0;border-radius:var(--r-full);cursor:pointer;
+  font:600 16px/1.5 var(--f-text);
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--c-surface);color:var(--c-ink);text-decoration:none;
+  transition:background var(--dur) var(--ease),color var(--dur) var(--ease);
+  will-change:transform;
+}
+.btn__dot{
+  width:32px;height:32px;border-radius:var(--r-full);
+  background:var(--c-signal);flex:none;
+  display:grid;place-items:center;
+  transition:width var(--dur) var(--ease),height var(--dur) var(--ease);
+}
+.btn__dot svg{width:14px;height:14px;stroke:var(--c-paper);stroke-width:1.75;
+  fill:none;transition:transform var(--dur) var(--ease)}
+.btn:hover .btn__dot{width:40px;height:40px}
+.btn:hover .btn__dot svg{transform:translateY(2px)}
+.btn:active{background:var(--c-surface-2)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   6 · ДЕКОР
+   ═══════════════════════════════════════════════════════════════════ */
+.blob{
+  position:relative;display:inline-block;isolation:isolate;
+  transition:color var(--dur-slow) var(--ease) .18s;
+}
+.blob::before{
+  content:"";position:absolute;z-index:-1;
+  inset:.04em -.2em .08em -.17em;
+  background:var(--c-signal);
+  clip-path:var(--clip-quad-a);
+  transform:rotate(-1.5deg) scale(1);
+  transform-origin:50% 60%;
+}
+/* слово лежить на signal → ink (4.56 ✅); sand на signal було б 2.47 ⛔ */
+.blob.is-on{color:var(--c-ink)}
+.rule{
+  border:0;height:1px;background:var(--c-rule);opacity:.28;
+  margin:0;transform:scaleX(0);transform-origin:0 50%;
+}
+html:not(.js) .rule{transform:none}
+
+.wave{
+  display:block;width:100%;height:clamp(24px,4vw,60px);
+  position:absolute;left:0;bottom:-1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   7 · HERO  (P1)
+   ═══════════════════════════════════════════════════════════════════ */
+.hero{
+  position:relative;min-height:100svh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding-top:calc(var(--hero-top) + var(--header-h));
+  padding-bottom:var(--section-py);
+  overflow:hidden;isolation:isolate;
+}
+.hero__media{position:absolute;inset:-8% 0;z-index:-2;will-change:transform}
+.hero__media img{width:100%;height:100%;object-fit:cover;object-position:60% 45%}
+.hero__scrim{
+  position:absolute;inset:0;z-index:-1;
+  /* P1 затемнення посилене знизу: текст стоїть унизу кадру (§11 > §8-P1) */
+  background:
+    linear-gradient(180deg,rgba(33,33,33,.42) 0%,rgba(33,33,33,.30) 34%,
+                    rgba(33,33,33,.72) 74%,rgba(33,33,33,.93) 100%);
+}
+.hero__inner{display:flex;flex-direction:column;gap:var(--block-gap)}
+.hero__title{color:var(--c-sand);max-width:16ch}
+.hero__title .blob::before{background:var(--c-signal)}
+.hero__text{
+  display:flex;flex-direction:column;gap:var(--s-6);
+  max-width:46ch;
+}
+.hero__lead{color:var(--c-paper);max-width:44ch}
+.hero__foot{
+  display:flex;flex-wrap:wrap;align-items:center;
+  gap:var(--s-5) var(--s-8);
+}
+.hero__note{color:var(--c-sand-deep);font-size:var(--t-caption)}
+@media (min-width:1024px){
+  .hero__inner{display:grid;grid-template-columns:1fr auto;align-items:end;
+    gap:var(--block-gap) var(--s-16)}
+  .hero__title{grid-column:1/-1}
+  .hero__foot{justify-self:end;flex-direction:column;align-items:flex-end;
+    text-align:right;gap:var(--s-5)}
+}
+.hero__cue{
+  position:absolute;left:50%;bottom:var(--s-5);transform:translateX(-50%);
+  width:1px;height:48px;background:linear-gradient(180deg,transparent,var(--c-sand));
+  opacity:.5;
+}
+.hero__cue::after{
+  content:"";position:absolute;left:50%;bottom:0;translate:-50% 0;
+  width:5px;height:5px;border-radius:var(--r-full);background:var(--c-signal);
+  animation:cueDrop 2.4s var(--ease) infinite;
+}
+@keyframes cueDrop{
+  0%{transform:translateY(-44px);opacity:0}
+  30%{opacity:1} 70%{opacity:1}
+  100%{transform:translateY(0);opacity:0}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   8 · #model  (L1)
+   ═══════════════════════════════════════════════════════════════════ */
+.model__h2{margin-bottom:var(--h2-gap)}
+.model__claim{max-width:16ch;color:var(--c-graphite)}
+@media (min-width:1024px){.model__claim{max-width:60%}}
+
+/* ═══════════════════════════════════════════════════════════════════
+   9 · #space  (L3 + P2)
+   ═══════════════════════════════════════════════════════════════════ */
+.space__grid{
+  display:grid;gap:var(--s-16) var(--s-6);margin-top:var(--h2-gap);
+}
+@media (min-width:768px){.space__grid{grid-template-columns:1fr 1fr}}
+
+.photo-offset{position:relative;margin:16px 16px 0 0}
+.photo-offset::before{
+  content:"";position:absolute;inset:-16px -16px 16px 16px;
+  background:var(--c-signal);transform:rotate(-2deg);z-index:0;
+  transition:transform var(--dur) var(--ease);
+}
+.photo-offset--forest::before{background:var(--c-forest);transform:rotate(2.4deg)}
+.photo-offset img{
+  position:relative;z-index:1;display:block;width:100%;
+  aspect-ratio:3/2;object-fit:cover;border-radius:var(--r-md);
+  transition:transform var(--dur-slow) var(--ease),filter var(--dur-slow) var(--ease);
+}
+.space__card{display:flex;flex-direction:column;gap:var(--s-5)}
+.space__card:hover .photo-offset::before{transform:rotate(-3.6deg) scale(1.02)}
+.space__card--b:hover .photo-offset::before{transform:rotate(4deg) scale(1.02)}
+.space__card:hover .photo-offset img{transform:scale(1.015)}
+.space__body{display:flex;flex-direction:column;gap:var(--s-3);padding-top:var(--s-3)}
+.space__body p{color:var(--c-graphite)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10 · #mission  (L2 + C4) + P6
+   ═══════════════════════════════════════════════════════════════════ */
+.mission{padding-bottom:calc(var(--section-py) + clamp(24px,4vw,60px))}
+.mission__grid{display:grid;gap:var(--block-gap)}
+@media (min-width:1024px){
+  .mission__grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);
+    gap:var(--s-16);align-items:start}
+}
+.mission__intro{display:flex;flex-direction:column;gap:var(--s-6)}
+.mission__intro h2{max-width:14ch}
+.mission__intro .blob::before{background:var(--c-signal);clip-path:var(--clip-quad-b)}
+.mission__intro p{color:var(--c-paper);max-width:46ch}
+
+.chain{display:flex;flex-direction:column;gap:var(--s-4);align-items:flex-start}
+.chain__link{
+  display:flex;align-items:flex-start;gap:var(--s-3);
+  background:var(--c-surface);color:var(--c-ink);
+  padding:var(--s-5) var(--s-8);border-radius:var(--r-full);
+  font-size:var(--t-body-s);line-height:1.5;max-width:44ch;
+}
+.chain__bullet{
+  width:12px;height:12px;border-radius:var(--r-full);
+  background:var(--c-signal);flex:none;margin-top:.45em;
+}
+.chain__arrow{
+  width:32px;height:32px;flex:none;color:var(--c-signal);
+  margin-left:var(--s-8);
+  transform:rotate(90deg);
+}
+.chain__arrow svg{width:100%;height:100%;stroke:currentColor;stroke-width:1.5;fill:none}
+/* Горизонтальний ряд C4 потребує ≥220px на ланку. У колонці L2 стільки немає,
+   тому тримаємо вертикальну форму (та сама, що в спеці для ≤768px) —
+   ланцюжок ніколи не ламається на 2+1. */
+.chain__link{width:100%}
+
+/* ═══════════════════════════════════════════════════════════════════
+   11 · #directions  (L6 + C6 + P7)
+   ═══════════════════════════════════════════════════════════════════ */
+.dirs{overflow:hidden;isolation:isolate}
+.dirs__star{
+  position:absolute;z-index:0;left:-9%;bottom:4%;
+  width:min(30vw,260px);aspect-ratio:1;color:var(--c-ink);opacity:.14;
+  pointer-events:none;
+}
+.dirs__star svg{width:100%;height:100%;fill:currentColor}
+.dirs__grid{display:grid;gap:var(--block-gap);position:relative;z-index:1}
+@media (min-width:1024px){
+  .dirs__grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);
+    gap:var(--s-16);align-items:center}
+}
+.dirs__figure{display:flex;flex-direction:column;gap:var(--s-16);align-items:flex-start}
+.dirs__numwrap{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  font-size:var(--t-mega);isolation:isolate;
+}
+/* §9 «великий круг» forest — тримає sand-цифру (8.35 ✅).
+   Розмір в em від mega, тому на всіх брейкпоїнтах не дістає до H2. */
+.dirs__circle{
+  position:absolute;z-index:-1;border-radius:var(--r-full);
+  background:var(--c-forest);
+  width:1.05em;height:1.05em;
+  left:50%;top:50%;translate:-50% -50%;
+}
+.dirs__num{color:var(--c-sand);display:block;margin-left:-.06em}
+.dirs__figure h2{max-width:14ch}
+.dirs__cards{display:grid;gap:var(--s-6)}
+@media (min-width:640px){.dirs__cards{grid-template-columns:1fr 1fr}}
+
+.card{
+  background:var(--c-ink);color:var(--c-paper);
+  border-radius:var(--r-xl);padding:var(--s-8);
+  display:flex;flex-direction:column;gap:var(--s-3);
+  position:relative;overflow:hidden;
+  transition:background var(--dur) var(--ease);
+}
+.card h3{color:var(--c-sand)}
+.card p{color:var(--c-paper);opacity:.86;font-size:var(--t-body)}
+.card::after{
+  content:"";position:absolute;right:-30%;top:-30%;
+  width:70%;aspect-ratio:1;border-radius:var(--r-full);
+  background:rgba(224,216,181,.06);
+  transform:scale(.4);opacity:0;
+  transition:transform var(--dur-slow) var(--ease),opacity var(--dur-slow) var(--ease);
+}
+.card:hover::after{transform:scale(1);opacity:1}
+
+/* ═══════════════════════════════════════════════════════════════════
+   12 · #trust  (C8 + C5 + C7)
+   ═══════════════════════════════════════════════════════════════════ */
+.trust__block{display:flex;flex-direction:column;gap:var(--s-6);max-width:52ch}
+.trust__org{color:var(--c-ink)}
+.trust__statute{color:var(--c-graphite)}
+.trust__statute b{font-weight:700;color:var(--c-ink)}
+
+.faq{padding-top:var(--section-py)}
+.faq__grid{display:grid;gap:var(--h2-gap)}
+@media (min-width:1024px){
+  .faq__grid{grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:var(--s-16)}
+  .faq__aside{position:sticky;top:calc(var(--header-h) + var(--s-8));align-self:start}
+}
+.acc{border-top:1px solid var(--c-line)}
+.acc__item{border-bottom:1px solid var(--c-line)}
+.acc__btn{
+  width:100%;background:none;border:0;cursor:pointer;
+  display:flex;align-items:flex-start;gap:var(--s-6);
+  padding:var(--s-6) 0;text-align:left;color:var(--c-ink);
+  font-family:var(--f-text);font-weight:600;
+  font-size:var(--t-h4);line-height:1.3;
+  min-height:44px;
+  transition:color var(--dur) var(--ease);
+}
+.acc__btn:hover{color:var(--c-signal-press)}
+.acc__q{flex:1 1 auto}
+.acc__ind{
+  position:relative;width:24px;height:24px;flex:none;margin-top:.22em;
+  transition:transform var(--dur) var(--ease);
+}
+.acc__ind::before,.acc__ind::after{
+  content:"";position:absolute;left:50%;top:50%;background:var(--c-signal);
+  translate:-50% -50%;
+}
+.acc__ind::before{width:24px;height:1.5px}
+.acc__ind::after{width:1.5px;height:24px;transition:opacity var(--dur) var(--ease)}
+.acc__btn[aria-expanded="true"] .acc__ind{transform:rotate(180deg)}
+.acc__btn[aria-expanded="true"] .acc__ind::after{opacity:0}
+.acc__panel{
+  display:grid;grid-template-rows:0fr;
+  transition:grid-template-rows var(--dur) var(--ease);
+}
+.acc__btn[aria-expanded="true"]+.acc__panel{grid-template-rows:1fr}
+.acc__panel>div{overflow:hidden}
+.acc__panel p{
+  color:var(--c-graphite);max-width:68ch;
+  padding-bottom:var(--s-6);padding-right:var(--s-10);
+}
+
+.partners__note{color:var(--c-mute);margin-bottom:var(--s-6)} /* mute на ink = 6.38 ✅ */
+.partners__grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:var(--s-6) var(--s-4);
+}
+/* 5 колонок лише з 1024px — на 768 плитка 112px ріже довгі імена */
+@media (min-width:1024px){.partners__grid{grid-template-columns:repeat(5,1fr);gap:var(--s-8) var(--s-6)}}
+.partner{display:flex;flex-direction:column;gap:var(--s-4)}
+.partner__tile{
+  position:relative;aspect-ratio:1;overflow:hidden;
+  clip-path:var(--clip-quad-a);
+  transform:rotate(-1.6deg);
+  transition:transform var(--dur-slow) var(--ease),clip-path var(--dur-slow) var(--ease);
+}
+.partner:nth-child(even) .partner__tile{clip-path:var(--clip-quad-b);transform:rotate(1.8deg)}
+/* partners-demo.webp — спрайт 5×2 (1536×1024). Кожна плитка показує свою
+   комірку: ширина 500% від плитки, зсув left = −колонка×100%.
+   Висота зображення = 3.333× ширини плитки → рядок = 166.667%. */
+.partner__tile img{
+  position:absolute;max-width:none;
+  width:500%;height:auto;
+  left:calc(var(--c) * -100%);
+  top:calc(var(--r) * -166.667% - 18%);
+  filter:saturate(.9) contrast(1.02);
+  transition:filter var(--dur-slow) var(--ease),transform var(--dur-slow) var(--ease);
+}
+.partner__tile::after{
+  content:"";position:absolute;inset:0;background:var(--c-signal);
+  opacity:0;mix-blend-mode:color;
+  transition:opacity var(--dur-slow) var(--ease);
+}
+.partner:hover .partner__tile{transform:rotate(0deg) scale(1.02)}
+.partner:hover .partner__tile img{filter:saturate(1) contrast(1) brightness(1)}
+.partner:hover .partner__tile::after{opacity:.24}
+.partner__name{color:var(--c-sand);font-size:clamp(1rem,1.6vw,1.5rem)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   13 · ФУТЕР
+   ═══════════════════════════════════════════════════════════════════ */
+.foot{position:relative;overflow:hidden;isolation:isolate}
+.foot__media{position:absolute;inset:0;z-index:-2}
+.foot__media img{
+  width:100%;height:100%;object-fit:cover;
+  /* інший кроп + інша яскравість, щоб кадр не читався як дубль hero */
+  object-position:18% 88%;transform:scale(1.5) rotate(180deg);
+  filter:grayscale(.4) brightness(.72) contrast(1.15);
+}
+.foot__scrim{
+  position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(33,33,33,.62),rgba(33,33,33,.92));
+}
+.foot__grid{display:flex;flex-direction:column;gap:var(--block-gap)}
+.foot h2{font-size:var(--t-display-2);line-height:.93;letter-spacing:-.02em;max-width:9ch}
+.foot__note{color:var(--c-sand-deep);font-size:var(--t-lead);max-width:34ch}
+.foot__meta{
+  display:flex;flex-wrap:wrap;gap:var(--s-4) var(--s-8);
+  align-items:baseline;justify-content:space-between;
+  padding-top:var(--s-8);border-top:1px solid rgba(224,216,181,.22);
+  color:var(--c-mute);font-size:var(--t-caption);
+}
+.foot__org{color:var(--c-paper);font-size:var(--t-body-s)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   14 · СТАНИ АНІМАЦІЇ (застосовуються лише коли JS+GSAP живі)
+   ═══════════════════════════════════════════════════════════════════ */
+html.js .reveal{opacity:0}
+html.js .w{display:inline-block;overflow:hidden;vertical-align:bottom}
+html.js .w__i{display:inline-block;transform:translateY(105%)}
+html.js .blob::before{transform:rotate(-1.5deg) scale(0)}
+html.js .dirs__num{opacity:0}
+
+@media (prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+  .hero__cue::after{animation:none;opacity:1}
+  .grain{animation:none}
+  html.js .w__i{transform:none}
+  html.js .blob::before{transform:rotate(-1.5deg) scale(1)}
+}
+</style>
+</head>
+
+<body>
+
+<a class="skip" href="#main">До змісту</a>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+
+<div class="loader" aria-hidden="true">
+  <div class="loader__mark"><span>Світлиця</span></div>
+  <div class="loader__bar"></div>
+</div>
+
+<!-- ─────────────────────────── C2 · НАВІГАЦІЯ ─────────────────────────── -->
+<header class="nav" id="top">
+  <div class="nav__inner">
+    <a class="nav__logo" href="#top">Світлиця</a>
+    <nav aria-label="Основна навігація">
+      <ul class="nav__list">
+        <li><a class="nav__link" href="#space">Простір</a></li>
+        <li><a class="nav__link" href="#mission">Як це допомагає</a></li>
+        <li><a class="nav__link" href="#directions">Добрі справи</a></li>
+        <li><a class="nav__link" href="#trust">Прозорість</a></li>
+      </ul>
+    </nav>
+    <button class="nav__burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav__progress" aria-hidden="true"></div>
+  </div>
+</header>
+
+<div class="menu" id="menu">
+  <ul>
+    <li><a href="#space"><span>Простір</span></a></li>
+    <li><a href="#mission"><span>Як це допомагає</span></a></li>
+    <li><a href="#directions"><span>Добрі справи</span></a></li>
+    <li><a href="#trust"><span>Прозорість</span></a></li>
+  </ul>
+</div>
+
+<main id="main">
+
+<!-- ─────────────────────────── 1 · HERO · dark · P1 ─────────────────────────── -->
+<section class="hero t-dark" id="hero">
+  <div class="hero__media">
+    <img src="assets/images/cafe-concept-1536.webp"
+         srcset="assets/images/cafe-concept-800.webp 800w,
+                 assets/images/cafe-concept-1536.webp 1536w"
+         sizes="100vw" width="1536" height="1024" fetchpriority="high"
+         alt="Інтер’єр кав’ярні: широкий кадр простору з теплим світлом.">
+  </div>
+  <div class="hero__scrim" aria-hidden="true"></div>
+
+  <div class="l-container hero__inner">
+    <h1 class="hero__title u-display-1 js-split">Час для себе. <span class="blob">Під&shy;трим&shy;ка</span> для тих, хто поруч.</h1>
+
+    <div class="hero__text">
+      <p class="hero__lead u-lead reveal">Світлиця — кав’ярня і коворкінг у Черкасах, які створює громадська організація. Твоя кава чи робочий день тут підтримують її справу.</p>
+    </div>
+
+    <div class="hero__foot">
+      <a class="btn js-magnetic reveal" href="#mission">
+        Дізнатися, як це допомагає
+        <span class="btn__dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+        </span>
+      </a>
+      <p class="hero__note reveal">Відкриваємось у Черкасах. Слідкуй за відкриттям.</p>
+    </div>
+  </div>
+
+  <div class="hero__cue" aria-hidden="true"></div>
+</section>
+
+<!-- ─────────────────────────── 2 · #model · light · L1 ─────────────────────────── -->
+<section class="c-section t-light" id="model">
+  <div class="l-container">
+    <h2 class="model__h2 js-split">Як це працює</h2>
+    <p class="model__claim u-display-2 js-scrub">Ти приходиш на каву або попрацювати, заклад працює як звичайне місце для міста, а його робота підтримує справу організації «Світлиця».</p>
+  </div>
+</section>
+
+<div class="l-container"><hr class="rule"></div>
+
+<!-- ─────────────────────────── 3 · #space · light · L3 + P2 ─────────────────────────── -->
+<section class="c-section t-light" id="space">
+  <div class="l-container">
+    <h2 class="js-split">Кав’ярня і коворкінг</h2>
+
+    <div class="space__grid">
+      <article class="space__card reveal">
+        <div class="photo-offset">
+          <img src="assets/images/coffee-concept-1200.webp"
+               srcset="assets/images/coffee-concept-600.webp 600w,
+                       assets/images/coffee-concept-1200.webp 1200w"
+               sizes="(min-width:768px) 50vw, 100vw"
+               width="1200" height="800" alt="" loading="lazy">
+        </div>
+        <div class="space__body">
+          <h3>Кав’ярня</h3>
+          <p class="u-body">Тепле місце для кави, розмови і паузи серед дня.</p>
+        </div>
+      </article>
+
+      <article class="space__card space__card--b reveal">
+        <div class="photo-offset photo-offset--forest">
+          <img src="assets/images/work-concept-1200.webp"
+               srcset="assets/images/work-concept-600.webp 600w,
+                       assets/images/work-concept-1200.webp 1200w"
+               sizes="(min-width:768px) 50vw, 100vw"
+               width="1200" height="800" alt="" loading="lazy">
+        </div>
+        <div class="space__body">
+          <h3>Коворкінг</h3>
+          <p class="u-body">Спокійне місце для зосередженої роботи і корисних зустрічей.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── 4 · #mission · dark · L2 + C4 ─────────────────────────── -->
+<section class="c-section mission t-dark" id="mission">
+  <div class="l-container mission__grid">
+    <div class="mission__intro">
+      <h2 class="js-split">Як твоя <span class="blob">чашка</span> допомагає</h2>
+      <p class="u-lead reveal">Заклад створює громадська організація «Світлиця». За проєктом статуту доходи організації не розподіляються між засновниками чи учасниками, а спрямовуються на її статутну мету.</p>
+    </div>
+
+    <ol class="chain">
+      <li class="chain__link js-chain">
+        <span class="chain__bullet" aria-hidden="true"></span>
+        Твоя чашка кави або робочий день у просторі
+      </li>
+      <li class="chain__arrow js-chain" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+      </li>
+      <li class="chain__link js-chain">
+        <span class="chain__bullet" aria-hidden="true"></span>
+        Кошти, які отримує громадська організація
+      </li>
+      <li class="chain__arrow js-chain" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+      </li>
+      <li class="chain__link js-chain">
+        <span class="chain__bullet" aria-hidden="true"></span>
+        Використання на статутну мету
+      </li>
+    </ol>
+  </div>
+
+  <!-- P6 · хвиляста межа dark → signal -->
+  <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,28 C240,4 480,52 720,36 C960,20 1200,0 1440,16 L1440,60 L0,60 Z"
+          fill="var(--c-signal)"/>
+  </svg>
+</section>
+
+<!-- ─────────────────────────── 5 · #directions · signal · L6 + C6 + P7 ─────────────────────────── -->
+<section class="c-section dirs t-signal" id="directions">
+  <div class="dirs__star" aria-hidden="true">
+    <svg viewBox="0 0 100 100"><path d="M50 0 L57 36 L86 14 L64 43 L100 50 L64 57 L86 86 L57 64 L50 100 L43 64 L14 86 L36 57 L0 50 L36 43 L14 14 L43 36 Z"/></svg>
+  </div>
+
+  <div class="l-container dirs__grid">
+    <div class="dirs__figure">
+      <span class="dirs__numwrap">
+        <span class="dirs__circle" aria-hidden="true"></span>
+        <span class="dirs__num u-mega" aria-hidden="true">4</span>
+      </span>
+      <h2 class="js-split">Чотири напрями добрих справ</h2>
+    </div>
+
+    <div class="dirs__cards">
+      <article class="card reveal">
+        <h3>Сильніше місто і публічні простори</h3>
+        <p>Місцева інфраструктура, простори для зустрічей і спільної роботи, локальні ініціативи.</p>
+      </article>
+      <article class="card reveal">
+        <h3>Підтримка людей, яких торкнулася війна</h3>
+        <p>Переселенці, військові, ветерани та їхні родини.</p>
+      </article>
+      <article class="card reveal">
+        <h3>Освіта, культура і спільнота</h3>
+        <p>Лекції, майстерні, дискусії, зустрічі, культурні та громадські події.</p>
+      </article>
+      <article class="card reveal">
+        <h3>Підтримка корисних ініціатив</h3>
+        <p>Програми та адресна підтримка в межах статутної мети і затвердженого порядку.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── 6 · #trust а · light · C8 ─────────────────────────── -->
+<section class="c-section t-light" id="trust">
+  <div class="l-container">
+    <div class="trust__block">
+      <h2 class="js-split">Кому довіряти</h2>
+      <p class="trust__org u-lead">Громадська організація «Світлиця»</p>
+      <p class="trust__statute u-body">Статут організації: <b>проєкт</b>.</p>
+    </div>
+  </div>
+</section>
+
+<div class="l-container"><hr class="rule"></div>
+
+<!-- ─────────────────────────── 7 · #trust б · light · L2 + C5 ─────────────────────────── -->
+<section class="c-section faq t-light">
+  <div class="l-container faq__grid">
+    <div class="faq__aside">
+      <h2 class="js-split">Питання</h2>
+    </div>
+
+    <div class="acc">
+      <div class="acc__item">
+        <h3><button class="acc__btn" type="button" aria-expanded="true" aria-controls="a1">
+          <span class="acc__q">Що таке Світлиця?</span>
+          <span class="acc__ind" aria-hidden="true"></span>
+        </button></h3>
+        <div class="acc__panel" id="a1"><div>
+          <p class="u-body">Кав’ярня і коворкінг у Черкасах, які створює громадська організація «Світлиця»: місце для кави, роботи і зустрічей.</p>
+        </div></div>
+      </div>
+
+      <div class="acc__item">
+        <h3><button class="acc__btn" type="button" aria-expanded="false" aria-controls="a2">
+          <span class="acc__q">Як візит допомагає?</span>
+          <span class="acc__ind" aria-hidden="true"></span>
+        </button></h3>
+        <div class="acc__panel" id="a2"><div>
+          <p class="u-body">Твоя кава чи робочий день тут підтримують справу організації, а як саме, пояснює розділ «Як твоя чашка допомагає».</p>
+        </div></div>
+      </div>
+
+      <div class="acc__item">
+        <h3><button class="acc__btn" type="button" aria-expanded="false" aria-controls="a3">
+          <span class="acc__q">Це бізнес чи благодійність?</span>
+          <span class="acc__ind" aria-hidden="true"></span>
+        </button></h3>
+        <div class="acc__panel" id="a3"><div>
+          <p class="u-body">Заклад створює громадська організація «Світлиця». Для відвідувача це звичайна кав’ярня і коворкінг, а сама організація залишається неприбутковою.</p>
+        </div></div>
+      </div>
+
+      <div class="acc__item">
+        <h3><button class="acc__btn" type="button" aria-expanded="false" aria-controls="a4">
+          <span class="acc__q">Куди йдуть гроші?</span>
+          <span class="acc__ind" aria-hidden="true"></span>
+        </button></h3>
+        <div class="acc__panel" id="a4"><div>
+          <p class="u-body">Кошти, які отримує організація, використовуються на її статутну мету. Порядок вибору конкретних справ потребує окремого затвердженого рішення, тому напрями, суми й результати з’являться тут лише після затвердження.</p>
+        </div></div>
+      </div>
+
+      <div class="acc__item">
+        <h3><button class="acc__btn" type="button" aria-expanded="false" aria-controls="a5">
+          <span class="acc__q">Що можна використовувати: кав’ярня і коворкінг?</span>
+          <span class="acc__ind" aria-hidden="true"></span>
+        </button></h3>
+        <div class="acc__panel" id="a5"><div>
+          <p class="u-body">Кав’ярня — місце для кави, розмови і паузи серед дня; коворкінг — спокійне робоче місце в тому самому просторі: приходиш, сідаєш за стіл і працюєш. Умови, кількість місць і ціни з’являться на цій сторінці після підтвердження.</p>
+        </div></div>
+      </div>
+
+      <div class="acc__item">
+        <h3><button class="acc__btn" type="button" aria-expanded="false" aria-controls="a6">
+          <span class="acc__q">Коли і де можна завітати?</span>
+          <span class="acc__ind" aria-hidden="true"></span>
+        </button></h3>
+        <div class="acc__panel" id="a6"><div>
+          <p class="u-body">Простір ще готується до відкриття в Черкасах. Дата, адреса і графік з’являться на цій сторінці після підтвердження.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── 8 · #trust в · dark · P4 + C7 ─────────────────────────── -->
+<section class="c-section t-dark partners">
+  <div class="l-container">
+    <h2 class="js-split">Партнери Світлиці</h2>
+    <p class="partners__note u-caption" style="margin-top:var(--h2-gap)">Демонстраційні профілі. Імена й портрети вигадані.</p>
+
+    <ul class="partners__grid">
+      <li class="partner js-tile"><div class="partner__tile" style="--c:0;--r:0"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Олена Коваль</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:1;--r:0"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Андрій Левченко</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:2;--r:0"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Марія Бондар</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:3;--r:0"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Дмитро Савчук</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:4;--r:0"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Софія Мельник</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:0;--r:1"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Тарас Гончар</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:1;--r:1"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Анна Романюк</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:2;--r:1"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Олексій Ткаченко</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:3;--r:1"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Наталія Мороз</span></li>
+      <li class="partner js-tile"><div class="partner__tile" style="--c:4;--r:1"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Максим Поліщук</span></li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<!-- ─────────────────────────── 9 · ФУТЕР · ink · L1 ─────────────────────────── -->
+<footer class="c-section foot t-ink">
+  <div class="foot__media" aria-hidden="true">
+    <img src="assets/images/cafe-concept-1536.webp" width="1536" height="1024" alt="" loading="lazy">
+  </div>
+  <div class="foot__scrim" aria-hidden="true"></div>
+
+  <div class="l-container foot__grid">
+    <h2 class="js-split">Будь серед перших</h2>
+    <p class="foot__note reveal">Відкриваємось у Черкасах. Слідкуй за відкриттям.</p>
+    <div class="foot__meta reveal">
+      <span class="foot__org">Громадська організація «Світлиця»</span>
+      <span>Оновлено: 11.09.2026</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  'use strict';
+  var root = document.documentElement;
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Акордеон C5 — працює завжди, навіть без GSAP ───────────────────── */
+  document.querySelectorAll('.acc__btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      if (window.ScrollTrigger) setTimeout(function(){ ScrollTrigger.refresh(); }, 320);
+    });
+  });
+
+  /* ── Мобільне меню — теж без залежностей ───────────────────────────── */
+  var burger = document.querySelector('.nav__burger');
+  var menu = document.getElementById('menu');
+  function setMenu(open){
+    root.classList.toggle('menu-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    if (window.gsap && !REDUCED){
+      gsap.to(menu, {clipPath: open ? 'inset(0% 0 0% 0)' : 'inset(0 0 100% 0)',
+                     duration:.5, ease:'power3.inOut'});
+      if (open) gsap.fromTo(menu.querySelectorAll('a span'),
+        {yPercent:110},{yPercent:0, duration:.5, stagger:.06, delay:.2, ease:'power3.out'});
+    } else {
+      menu.style.clipPath = open ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)';
+    }
+  }
+  burger.addEventListener('click', function(){
+    setMenu(root.classList.contains('menu-open') === false);
+  });
+  menu.addEventListener('click', function(e){ if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && root.classList.contains('menu-open')) setMenu(false);
+  });
+
+  /* ── Без GSAP: показуємо все як є ──────────────────────────────────── */
+  if (!window.gsap || !window.ScrollTrigger){
+    root.classList.add('is-loaded');
+    return;
+  }
+  gsap.registerPlugin(ScrollTrigger);
+  root.classList.add('js');
+  /* страховка: що б не сталось із таймлайном, лоадер не лишається на екрані */
+  setTimeout(function(){ root.classList.add('is-loaded'); }, 4000);
+
+  /* ── Розбиття на слова зі збереженням вкладених елементів (blob, &shy;) ── */
+  function splitWords(el){
+    var out = [];
+    function wrap(word){
+      var outer = document.createElement('span'); outer.className = 'w';
+      var inner = document.createElement('span'); inner.className = 'w__i';
+      inner.textContent = word;
+      outer.appendChild(inner); out.push(inner); return outer;
+    }
+    function walk(node){
+      Array.prototype.slice.call(node.childNodes).forEach(function(child){
+        if (child.nodeType === 3){
+          var parts = child.textContent.split(/(\s+)/);
+          var frag = document.createDocumentFragment();
+          parts.forEach(function(p){
+            if (!p) return;
+            if (/^\s+$/.test(p)) frag.appendChild(document.createTextNode(' '));
+            else frag.appendChild(wrap(p));
+          });
+          node.replaceChild(frag, child);
+        } else if (child.nodeType === 1 && child.classList.contains('blob')){
+          var o = document.createElement('span'); o.className = 'w';
+          var i = document.createElement('span'); i.className = 'w__i';
+          child.parentNode.replaceChild(o, child);
+          i.appendChild(child); o.appendChild(i); out.push(i);
+        } else if (child.nodeType === 1){
+          walk(child);
+        }
+      });
+    }
+    walk(el);
+    return out;
+  }
+
+  document.querySelectorAll('.js-split').forEach(function(el){
+    el._words = splitWords(el);
+    /* CSS-старт translateY(105%) GSAP читає як px — задаємо yPercent явно */
+    gsap.set(el._words, {y:0, yPercent:105});
+  });
+
+  var D = REDUCED ? .01 : .6;
+  var wordTween = function(words, extra){
+    return Object.assign({yPercent:0, duration: REDUCED ? .3 : .9,
+      stagger: REDUCED ? 0 : .055, ease:'expo.out'}, extra || {});
+  };
+
+  /* ── Лоадер ────────────────────────────────────────────────────────── */
+  var heroWords = document.querySelector('.hero__title')._words;
+  var intro = gsap.timeline({onComplete:function(){ root.classList.add('is-loaded'); }});
+
+  if (REDUCED){
+    gsap.set('.loader', {display:'none'});
+    root.classList.add('is-loaded');
+    intro = gsap.timeline();
+  } else {
+    gsap.set('.loader__mark span', {y:0, yPercent:105});
+    intro
+      .to('.loader__mark span', {yPercent:0, duration:.7, ease:'expo.out'})
+      .to('.loader__bar', {scaleX:1, duration:.7, ease:'power2.inOut'}, 0)
+      .to('.loader__mark span', {yPercent:-105, duration:.5, ease:'power3.in'}, '+=.2')
+      .to('.loader', {yPercent:-100, duration:.8, ease:'power4.inOut'}, '-=.15');
+  }
+
+  intro
+    .to(heroWords, wordTween(), REDUCED ? 0 : '-=.45')
+    .fromTo('.hero .reveal', {opacity:0, y: REDUCED ? 0 : 24},
+      {opacity:1, y:0, duration:D, stagger:.08, ease:'power2.out'}, '-=.5');
+
+  /* помаранчева пляма — окремо, після заголовка (§10).
+     ::before не анімується напряму — вмикаємо класом. */
+  var styleEl = document.createElement('style');
+  /* специфічність мусить перебити html.js .blob::before */
+  styleEl.textContent = 'html.js .blob.is-on::before{transform:rotate(-1.5deg) scale(1);'+
+    'transition:transform '+(REDUCED?'.01s':'.6s')+' cubic-bezier(.25,.1,.25,1)}';
+  document.head.appendChild(styleEl);
+  intro.add(function(){
+    document.querySelectorAll('.hero__title .blob').forEach(function(b){ b.classList.add('is-on'); });
+  }, REDUCED ? 0 : '-=.75');
+
+  /* ── Hero: паралакс + ken burns ────────────────────────────────────── */
+  if (!REDUCED){
+    gsap.to('.hero__media', {yPercent:14, ease:'none',
+      scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:true}});
+    gsap.fromTo('.hero__media img', {scale:1.04}, {scale:1.14, ease:'none',
+      scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:1}});
+    gsap.to('.hero__cue', {opacity:0, ease:'none',
+      scrollTrigger:{trigger:'.hero', start:'top top', end:'20% top', scrub:true}});
+  }
+
+  /* ── Заголовки секцій: маска по словах ─────────────────────────────── */
+  gsap.utils.toArray('.js-split').forEach(function(el){
+    if (el.closest('.hero')) return;
+    gsap.to(el._words, Object.assign(wordTween(), {
+      scrollTrigger:{trigger:el, start:'top 88%'}
+    }));
+    var b = el.querySelector('.blob');
+    if (b) ScrollTrigger.create({trigger:el, start:'top 78%', once:true,
+      onEnter:function(){ b.classList.add('is-on'); }});
+  });
+
+  /* ── Загальна поява (§10: opacity + translateY 24, stagger 80ms) ───── */
+  ScrollTrigger.batch('.reveal', {
+    start:'top 88%',
+    onEnter:function(batch){
+      gsap.fromTo(batch, {opacity:0, y: REDUCED ? 0 : 24},
+        {opacity:1, y:0, duration:D, stagger:.08, ease:'power2.out', overwrite:true});
+    }
+  });
+
+  /* ── Волосяні лінії ────────────────────────────────────────────────── */
+  gsap.utils.toArray('.rule').forEach(function(el){
+    gsap.to(el, {scaleX:1, duration: REDUCED ? .3 : 1.1, ease:'power3.inOut',
+      scrollTrigger:{trigger:el, start:'top 92%'}});
+  });
+
+  /* ── #model: слова з graphite → ink за скролом ─────────────────────── */
+  var claim = document.querySelector('.js-scrub');
+  if (claim){
+    var cw = splitWords(claim);
+    gsap.set(cw, {y:0, yPercent:0});
+    if (REDUCED){
+      gsap.set(cw, {color:'#212121'});
+    } else {
+      gsap.fromTo(cw, {color:'#4F4F4F'}, {
+        color:'#212121', ease:'none', stagger:.4,
+        scrollTrigger:{trigger:claim, start:'top 78%', end:'bottom 62%', scrub:.6}
+      });
+    }
+  }
+
+  /* ── C4 · ланцюжок: стагер 120ms ──────────────────────────────────── */
+  gsap.fromTo('.js-chain', {opacity:0, y: REDUCED ? 0 : 16},
+    {opacity:1, y:0, duration:D, stagger:.12, ease:'power2.out',
+     scrollTrigger:{trigger:'.chain', start:'top 85%'}});
+
+  /* ── C6 · цифра 4: scale .94→1 + fade, коло і зірка ───────────────── */
+  gsap.fromTo('.dirs__num', {opacity:0, scale:.94},
+    {opacity:1, scale:1, duration: REDUCED ? .3 : .6, ease:'power2.out',
+     scrollTrigger:{trigger:'.dirs__figure', start:'top 80%'}});
+
+  if (!REDUCED){
+    gsap.fromTo('.dirs__circle', {scale:.72, opacity:.55}, {scale:1, opacity:1,
+      duration:1.1, ease:'power3.out',
+      scrollTrigger:{trigger:'.dirs__figure', start:'top 82%'}});
+    gsap.to('.dirs__star', {rotate:120, ease:'none',
+      scrollTrigger:{trigger:'.dirs', scrub:1.2}});
+  }
+
+  /* ── P4 · плитки партнерів: хвиля по сітці ────────────────────────── */
+  gsap.fromTo('.js-tile', {opacity:0, y: REDUCED ? 0 : 20, scale: REDUCED ? 1 : .94},
+    {opacity:1, y:0, scale:1, duration: REDUCED ? .3 : .55,
+     stagger:{each:.05, grid:'auto', from:'start'}, ease:'power2.out',
+     scrollTrigger:{trigger:'.partners__grid', start:'top 85%'}});
+
+  /* ── Футерне фото: повільний зустрічний паралакс ──────────────────── */
+  if (!REDUCED){
+    gsap.fromTo('.foot__media', {yPercent:-8}, {yPercent:8, ease:'none',
+      scrollTrigger:{trigger:'.foot', start:'top bottom', end:'bottom bottom', scrub:true}});
+  }
+
+  /* ── Прогрес у пігулці шапки ──────────────────────────────────────── */
+  gsap.to('.nav__progress', {scaleX:1, ease:'none',
+    scrollTrigger:{trigger:document.body, start:'top top', end:'bottom bottom', scrub:.3}});
+
+  /* ── Scrollspy ────────────────────────────────────────────────────── */
+  [['#space','#space'],['#mission','#mission'],['#directions','#directions'],['#trust','#trust']]
+    .forEach(function(pair){
+      var sec = document.querySelector(pair[0]);
+      var link = document.querySelector('.nav__link[href="'+pair[1]+'"]');
+      if (!sec || !link) return;
+      ScrollTrigger.create({
+        trigger:sec, start:'top 45%', end:'bottom 45%',
+        onToggle:function(self){ link.classList.toggle('is-active', self.isActive); }
+      });
+    });
+
+  /* ── Магнітна кнопка + кастомний курсор ───────────────────────────── */
+  var fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if (fine && !REDUCED){
+    var dot = document.querySelector('.cursor'),
+        ring = document.querySelector('.cursor-ring');
+    var mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my, shown=false;
+    var qdx=gsap.quickSetter(dot,'x','px'), qdy=gsap.quickSetter(dot,'y','px'),
+        qrx=gsap.quickSetter(ring,'x','px'), qry=gsap.quickSetter(ring,'y','px');
+    window.addEventListener('mousemove', function(e){
+      mx=e.clientX; my=e.clientY;
+      if(!shown){ shown=true; gsap.to([dot,ring],{opacity:1,duration:.3}); }
+    });
+    gsap.ticker.add(function(){
+      rx += (mx-rx)*.16; ry += (my-ry)*.16;
+      qdx(mx); qdy(my); qrx(rx); qry(ry);
+    });
+    document.querySelectorAll('a,button,.partner,.space__card,.card')
+      .forEach(function(el){
+        el.addEventListener('mouseenter', function(){ ring.classList.add('is-hot'); });
+        el.addEventListener('mouseleave', function(){ ring.classList.remove('is-hot'); });
+      });
+
+    document.querySelectorAll('.js-magnetic').forEach(function(el){
+      var r = 90;
+      el.addEventListener('mousemove', function(e){
+        var b = el.getBoundingClientRect();
+        var dx = e.clientX - (b.left + b.width/2);
+        var dy = e.clientY - (b.top + b.height/2);
+        gsap.to(el, {x:dx*.22, y:dy*.28, duration:.4, ease:'power3.out'});
+      });
+      el.addEventListener('mouseleave', function(){
+        gsap.to(el, {x:0, y:0, duration:.6, ease:'elastic.out(1,.45)'});
+      });
+    });
+  }
+
+  /* ── Перерахунок після шрифтів/зображень ──────────────────────────── */
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){ ScrollTrigger.refresh(); });
+  }
+  window.addEventListener('load', function(){ ScrollTrigger.refresh(); });
+})();
+</script>
+</body>
+</html>
