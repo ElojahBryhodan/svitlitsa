@@ -475,11 +475,14 @@ html:not(.js) .rule{transform:none}
   .model__grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);
                gap:var(--s-16);align-items:center}
   .model__claim{max-width:none}
-  .model__deco{display:block;justify-self:center}
+  .model__deco{display:block;justify-self:center;overflow:hidden;width:100%}
 }
 /* розетка */
 /* квадратна рамка 598 із запасом: півдіагональ мотиву 277 + 22 */
-.orn{display:block;width:min(36vw,470px);height:auto;overflow:visible}
+/* Ширина від колонки, не від vw. Повернутий на 45° квадрат розширює
+   габарит у √2, тому колонка обрізає порожні поля рамки — мотив
+   займає 65% рамки, отже навіть при 45° лишається всередині. */
+.orn{display:block;width:100%;max-width:470px;height:auto}
 .orn__frame{fill:var(--c-sand-deep)}
 .orn__gem{fill:var(--c-signal)}
 
@@ -717,6 +720,7 @@ html:not(.js) .rule{transform:none}
 .foot__mark svg{
   display:block;width:100%;height:auto;
   color:var(--c-sand);
+  overflow:visible;          /* літери розлітаються за межі viewBox */
 }
 /* кожна літера — окрема група, крутиться навколо власного центру */
 .wm__l{transform-box:fill-box;transform-origin:50% 50%;will-change:transform}
@@ -1285,7 +1289,9 @@ html.js .dirs__num{opacity:0}
   }
 
   /* ── Розетка в #model: хрест повертається на 45° і стає косим ─────── */
-  (function(){
+  /* matchMedia, бо нижче 1024 розетка display:none — її тригер рахувався
+     з нульових координат і давав від'ємний діапазон. */
+  gsap.matchMedia().add('(min-width:1024px)', function(){
     var orn = document.querySelector('.orn');
     if (!orn) return;
     var gems = gsap.utils.toArray(orn.querySelectorAll('.orn__gem'));
@@ -1296,8 +1302,6 @@ html.js .dirs__num{opacity:0}
        бралося не від елемента, і центр хреста їхав на 18px. */
     function origin(el){var b=el.getBBox();return (b.x+b.width/2)+' '+(b.y+b.height/2);}
 
-    /* тригер на секції, а не на розетці: вона центрована і на 348px нижче
-       початку секції, тому власний тригер спрацьовував уже посеред скролу */
     gsap.fromTo(frame, {opacity:0, scale: REDUCED ? 1 : .88},
       {opacity:1, scale:1, svgOrigin:origin(frame),
        duration: REDUCED ? .3 : .8, ease:'power3.out',
@@ -1311,16 +1315,15 @@ html.js .dirs__num{opacity:0}
          scrollTrigger:{trigger:'#model', start:'top 85%'}});
     });
 
-
     if (!REDUCED){
-      /* прив'язано до того самого скролу, що й перефарбування тексту */
       /* Крутимо сам <svg>, а не внутрішню групу: це звичайний блок у потоці,
          де transform-origin:50% 50% працює без SVG-координатних сюрпризів.
          Мотив центрований у viewBox, тому оберт рамки = оберт мотиву на місці. */
       gsap.fromTo(orn, {rotate:0}, {rotate:45, transformOrigin:'50% 50%', ease:'none',
         scrollTrigger:{trigger:orn, start:'top bottom', end:'bottom 30%', scrub:.7}});
     }
-  })();
+  });
+
 
   /* ── C4 · ланцюжок: стагер 120ms ──────────────────────────────────── */
   gsap.fromTo('.js-chain', {opacity:0, y: REDUCED ? 0 : 16},
@@ -1365,7 +1368,7 @@ html.js .dirs__num{opacity:0}
 
     if (REDUCED){
       gsap.fromTo(L, {opacity:0}, {opacity:1, duration:.3, stagger:.03,
-        scrollTrigger:{trigger:mark, start:'top 92%'}});
+        scrollTrigger:{trigger:'.foot', start:'top 90%'}});
       return;
     }
 
@@ -1379,7 +1382,9 @@ html.js .dirs__num{opacity:0}
       opacity: .18
     }, {
       x:0, y:0, rotate:0, scale:1, opacity:1, ease:'none',
-      scrollTrigger:{trigger:mark, start:'top bottom', end:'bottom 92%', scrub:.6}
+      /* кінець по низу футера: на вузьких екранах mark-bottom 92% виходив
+         за максимальний скрол, і слово ніколи не збиралось */
+      scrollTrigger:{trigger:'.foot', start:'top 90%', end:'bottom bottom', scrub:.6}
     });
   })();
 
