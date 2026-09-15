@@ -2,7 +2,7 @@
 
 Кав’ярня і коворкінг у Черкасах, які створює громадська організація «Світлиця».
 
-**Живий перегляд:** див. GitHub Pages цього репозиторію (вкладка Settings → Pages).
+**Живий перегляд:** <https://elojahbryhodan.github.io/svitlitsa/>
 
 ---
 
@@ -17,10 +17,11 @@
 ## Структура
 
 ```
-index.html                     вся сторінка: розмітка, CSS і JS інлайном
-assets/images/                 7 файлів .webp (4 основні + 3 дрібні варіанти)
-.github/workflows/pages.yml    автодеплой на GitHub Pages
+index.html        вся сторінка: розмітка, CSS і JS інлайном
+assets/images/    7 файлів .webp (4 основні + 3 дрібні варіанти)
 ```
+
+Збірки немає — GitHub Pages віддає `index.html` із кореня гілки `main` як є.
 
 ## Локальний запуск
 
