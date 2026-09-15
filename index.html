@@ -59,6 +59,8 @@
   --h2-gap:32px;       /* H2 → контент */
   --hero-top:72px;
   --header-h:56px; --header-offset:8px;
+  --nav-pad:16px; --nav-btn-h:44px; --nav-btn-px:16px; --nav-btn-fs:15px;
+  --nav-mark:24px;
 
   /* форма */
   --r-xs:4px; --r-sm:6px; --r-md:12px;
@@ -79,11 +81,25 @@
   --container-pad:48px; --section-py:64px;
   --block-gap:48px; --h2-gap:40px; --hero-top:96px;
 }}
-/* misto тримає --header-inner-height 4rem на широких екранах */
-@media (min-width:1024px){:root{--header-h:64px}}
+/* Масштаб шапки знято з misto.cafe @1440: панель 84px, радіус 42,
+   кнопки 60px кеглем 24px, паддинг 0 24px, відступ зверху 12px.
+   На 1024–1279 сходинка, бо чотири українські пункти по 24px не влазять. */
+@media (min-width:1024px){:root{
+  --header-h:72px; --header-offset:10px;
+  --nav-pad:20px; --nav-btn-h:52px; --nav-btn-px:22px; --nav-btn-fs:18px;
+  --nav-mark:26px;
+}}
 @media (min-width:1280px){:root{
   --container-pad:138px; --section-py:96px;
   --block-gap:64px; --h2-gap:48px; --hero-top:144px;
+}}
+/* Повний масштаб misto — лише там, де чотири українські пункти по 24px
+   лягають вільно. Мінімум за розрахунком 1343px, на 1360 запас усього 19px,
+   тому поріг 1400: там лишається ~59px. */
+@media (min-width:1400px){:root{
+  --header-h:84px; --header-offset:12px;
+  --nav-pad:24px; --nav-btn-h:60px; --nav-btn-px:30px; --nav-btn-fs:24px;
+  --nav-mark:30px;
 }}
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -235,19 +251,19 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
 .nav__bar{
   position:relative;height:var(--header-h);
   display:flex;align-items:center;
-  gap:var(--s-3);padding:0 var(--s-2) 0 var(--s-4);
+  gap:var(--s-3);padding-inline:var(--nav-pad);
 }
 /* логотип ліворуч, margin-right:auto відтискає решту вправо (misto.cafe) */
 .nav__logo{
   font-family:var(--f-display);font-weight:400;font-size:1.5rem;
   color:var(--c-ink);text-decoration:none;letter-spacing:-.01em;
   display:inline-flex;align-items:center;gap:10px;
-  height:44px;margin-right:auto;padding-inline:var(--s-2);
+  height:var(--nav-btn-h);margin-right:auto;padding-inline:var(--s-2);
   border-radius:var(--r-full);
 }
 /* фірмовий знак ⊔ замість декоративної крапки */
 .nav__mark{
-  height:24px;width:auto;flex:none;color:var(--c-ink);
+  height:var(--nav-mark);width:auto;flex:none;color:var(--c-ink);
   transition:transform var(--dur) var(--ease);
 }
 .nav__logo:hover .nav__mark{transform:translateY(-2px) scale(1.06)}
@@ -258,8 +274,8 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
 /* пункт як f-btn: пігулка, на hover наливається скляним відтінком */
 .nav__link{
   position:relative;display:inline-flex;align-items:center;
-  height:44px;padding:0 16px;border-radius:var(--r-full);
-  font:600 15px/1 var(--f-text);color:var(--c-ink);text-decoration:none;
+  height:var(--nav-btn-h);padding:0 var(--nav-btn-px);border-radius:var(--r-full);
+  font:400 var(--nav-btn-fs)/1 var(--f-text);color:var(--c-ink);text-decoration:none;
   white-space:nowrap;
   transition:color var(--dur) var(--ease),background-color var(--dur) var(--ease);
 }
