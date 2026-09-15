@@ -251,8 +251,14 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
 }
 .nav__logo:hover::before{transform:scale(1.7)}
 
+/* На hero шапка чиста: логотип + бургер. Пункти виїжджають після скролу,
+   ширину тягне GSAP (width:auto), бургер іде. Нижче 1024 пунктів немає ніколи. */
 .nav__list{display:none;align-items:center;gap:var(--s-1);margin-right:var(--s-2)}
-@media (min-width:1024px){.nav__list{display:flex}}
+@media (min-width:1024px){
+  .nav__list{display:flex;width:0;overflow:hidden}
+  html:not(.js).is-scrolled .nav__list{width:auto}
+  html:not(.js).is-scrolled .nav__burger{display:none}
+}
 /* пункт як f-btn: пігулка, на hover наливається скляним відтінком */
 .nav__link{
   position:relative;display:inline-flex;align-items:center;
@@ -280,7 +286,6 @@ html.menu-open .nav__inner{border-radius:var(--r-xl)}
   transition:background-color var(--dur) var(--ease);
 }
 .nav__burger:hover{background:rgba(244,78,20,.7)}
-@media (min-width:1024px){.nav__burger{display:none}}
 .nav__burger span{
   display:block;width:18px;height:1.5px;background:var(--c-paper);
   transition:transform var(--dur) var(--ease),opacity var(--dur) var(--ease);
@@ -313,7 +318,6 @@ html:not(.js).menu-open .menu{height:auto}
 .menu a:hover,.menu a:focus-visible{background:rgba(33,33,33,.07)}
 .menu a.is-active{color:var(--c-signal-press)}
 .menu a span{display:block}
-@media (min-width:1024px){.nav__drawer{display:none}}
 
 /* ═══════════════════════════════════════════════════════════════════
    5 · C1 · КНОПКА  (у контенті рівно одна)
@@ -1287,6 +1291,54 @@ html.js .dirs__num{opacity:0}
     }, {
       xPercent:0, yPercent:0, rotate:0, scale:1, opacity:1, ease:'none',
       scrollTrigger:{trigger:mark, start:'top bottom', end:'bottom 92%', scrub:.6}
+    });
+  })();
+
+  /* ── Шапка: на hero чиста, після скролу виїжджають пункти ─────────── */
+  (function(){
+    var list = document.querySelector('.nav__list');
+    var links = gsap.utils.toArray('.nav__link');
+    var DESK = window.matchMedia('(min-width:1024px)');
+    var scrolled = false;
+
+    function apply(on, instant){
+      var d = (instant || REDUCED) ? .01 : .45;
+      if (DESK.matches && on){
+        gsap.to(list,   {width:'auto', duration:d, ease:'power3.out'});
+        gsap.to(links,  {opacity:1, y:0, duration:d, stagger: REDUCED ? 0 : .045, ease:'power2.out'});
+        gsap.to(burger, {opacity:0, scale:.75, duration:d*.6, ease:'power2.in',
+          onComplete:function(){ burger.style.display='none'; }});
+      } else {
+        burger.style.display = '';
+        gsap.to(burger, {opacity:1, scale:1, duration:d*.6, ease:'power2.out'});
+        gsap.to(list,   {width:0, duration:d, ease:'power3.inOut'});
+        gsap.to(links,  {opacity:0, y: REDUCED ? 0 : -6, duration:d*.5, ease:'power2.in'});
+      }
+    }
+
+    gsap.set(links, {opacity:0, y: REDUCED ? 0 : -6});
+
+    function setScrolled(on){
+      if (on === scrolled) return;
+      scrolled = on;
+      root.classList.toggle('is-scrolled', on);
+      if (on && root.classList.contains('menu-open')) setMenu(false);
+      apply(on);
+    }
+
+    ScrollTrigger.create({
+      trigger:'.hero', start:'bottom 82%',
+      onEnter:function(){ setScrolled(true); },
+      onLeaveBack:function(){ setScrolled(false); }
+    });
+
+    /* перетин 1024px: перерахувати без анімації */
+    DESK.addEventListener('change', function(){
+      gsap.killTweensOf([list, links, burger]);
+      if (!DESK.matches){ gsap.set(list, {clearProps:'width'}); burger.style.display='';
+        gsap.set(burger, {opacity:1, scale:1}); }
+      else apply(scrolled, true);
+      ScrollTrigger.refresh();
     });
   })();
 
