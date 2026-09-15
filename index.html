@@ -1291,19 +1291,23 @@ html.js .dirs__num{opacity:0}
     var gems = gsap.utils.toArray(orn.querySelectorAll('.orn__gem'));
     var frame = orn.querySelector('.orn__frame');
 
+    /* тригер на секції, а не на розетці: вона центрована і на 348px нижче
+       початку секції, тому власний тригер спрацьовував уже посеред скролу */
     gsap.fromTo(frame, {opacity:0, scale: REDUCED ? 1 : .88},
       {opacity:1, scale:1, duration: REDUCED ? .3 : .8, ease:'power3.out',
-       scrollTrigger:{trigger:orn, start:'top 85%'}});
+       scrollTrigger:{trigger:'#model', start:'top 85%'}});
 
     gsap.fromTo(gems, {opacity:0, scale: REDUCED ? 1 : 0},
       {opacity:1, scale:1, duration: REDUCED ? .3 : .5,
        stagger: REDUCED ? 0 : .09, delay: REDUCED ? 0 : .25, ease:'back.out(2)',
-       scrollTrigger:{trigger:orn, start:'top 85%'}});
+       scrollTrigger:{trigger:'#model', start:'top 85%'}});
 
     if (!REDUCED){
       /* прив'язано до того самого скролу, що й перефарбування тексту */
+      /* поворот міряємо по самій розетці: 0° рівно коли вона входить знизу,
+         45° коли майже йде вгору — весь оберт відбувається на очах */
       gsap.fromTo(g, {rotate:0}, {rotate:45, ease:'none',
-        scrollTrigger:{trigger:'#model', start:'top 72%', end:'bottom 58%', scrub:.7}});
+        scrollTrigger:{trigger:orn, start:'top bottom', end:'bottom 30%', scrub:.7}});
     }
   })();
 
