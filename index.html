@@ -203,16 +203,11 @@ html.is-loaded .loader{display:none}
 /* ═══════════════════════════════════════════════════════════════════
    4 · C2 · НАВІГАЦІЯ
    ═══════════════════════════════════════════════════════════════════ */
-/* На hero панель широка і без скла — видно лише окремі пігулки (misto.cafe).
-   Після скролу вона звужується до смуги контейнера і вмикає скло:
-   логотип гасить власне, і все зливається в одну поверхню. */
 .nav{
   position:fixed;top:var(--header-offset);left:0;right:0;z-index:9200;
-  padding-inline:16px;
+  padding-inline:var(--container-pad);
   pointer-events:none;
-  transition:padding-inline var(--dur) var(--ease);
 }
-html.is-scrolled .nav{padding-inline:var(--container-pad)}
 /* Скло misto.cafe: ::before із backdrop-filter, колір і внутрішній волосяний
    глоу. Падаючої тіні немає — глибину дає лише глоу по внутрішньому краю. */
 .u-blur{position:relative}
@@ -223,43 +218,32 @@ html.is-scrolled .nav{padding-inline:var(--container-pad)}
   backdrop-filter:blur(var(--blur-size));
   background-color:var(--blur-color);
   box-shadow:inset 0 0 1px var(--blur-glow-color);
-  opacity:1;visibility:visible;
-  transition:opacity var(--dur) var(--ease),visibility var(--dur) var(--ease),
-             background-color var(--dur) var(--ease);
+  transition:background-color var(--dur) var(--ease);
 }
 
 /* Пігулка морфиться в картку: одна скляна поверхня, що росте вниз. */
 .nav__inner{
   pointer-events:auto;
-  max-width:none;
+  max-width:calc(var(--container-max) - var(--container-pad)*2);
   margin-inline:auto;
   border-radius:calc(var(--header-h) / 2);
   overflow:hidden;
-  transition:border-radius var(--dur) var(--ease),max-width var(--dur) var(--ease);
+  transition:border-radius var(--dur) var(--ease);
 }
-/* на hero скло великої панелі вимкнене */
-.nav__inner::before{opacity:0;visibility:hidden}
-html.is-scrolled .nav__inner{max-width:calc(var(--container-max) - var(--container-pad)*2)}
-html.is-scrolled .nav__inner::before{opacity:1;visibility:visible}
 html.menu-open .nav__inner{border-radius:var(--r-xl)}
-/* меню відкрите — скло потрібне завжди, інакше картка висітиме в повітрі */
-html.menu-open .nav__inner::before{opacity:1;visibility:visible}
 .nav__bar{
   position:relative;height:var(--header-h);
   display:flex;align-items:center;
   gap:var(--s-3);padding:0 var(--s-2) 0 var(--s-4);
 }
-/* логотип ліворуч, margin-right:auto відтискає решту вправо (misto.cafe).
-   На hero — власна скляна пігулка, після скролу гасне і зливається з панеллю. */
+/* логотип ліворуч, margin-right:auto відтискає решту вправо (misto.cafe) */
 .nav__logo{
   font-family:var(--f-display);font-weight:400;font-size:1.5rem;
   color:var(--c-ink);text-decoration:none;letter-spacing:-.01em;
   display:inline-flex;align-items:center;gap:10px;
-  height:44px;margin-right:auto;padding-inline:var(--s-4);
+  height:44px;margin-right:auto;padding-inline:var(--s-2);
   border-radius:var(--r-full);
 }
-html.is-scrolled .nav__logo::before,
-html.menu-open  .nav__logo::before{opacity:0;visibility:hidden}
 .nav__logo::before{
   content:"";width:10px;height:10px;border-radius:var(--r-full);
   background:var(--c-signal);flex:none;
@@ -736,7 +720,7 @@ html.js .dirs__num{opacity:0}
 <header class="nav" id="top">
   <div class="nav__inner u-blur">
     <div class="nav__bar">
-      <a class="nav__logo u-blur" href="#top">Світлиця</a>
+      <a class="nav__logo" href="#top">Світлиця</a>
       <nav aria-label="Основна навігація">
         <ul class="nav__list">
           <li><a class="nav__link" href="#space">Простір</a></li>
@@ -1342,12 +1326,11 @@ html.js .dirs__num{opacity:0}
       apply(on);
     }
 
-    var st = ScrollTrigger.create({
-      trigger:'.hero', start:'bottom 82%', end:'max',
-      onToggle:function(self){ setScrolled(self.isActive); }
+    ScrollTrigger.create({
+      trigger:'.hero', start:'bottom 82%',
+      onEnter:function(){ setScrolled(true); },
+      onLeaveBack:function(){ setScrolled(false); }
     });
-    /* сторінку могли перезавантажити вже прокрученою — виставити стан одразу */
-    if (st.isActive){ scrolled = true; root.classList.add('is-scrolled'); apply(true, true); }
 
     /* перетин 1024px: перерахувати без анімації */
     DESK.addEventListener('change', function(){
