@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Світлиця — кав’ярня і коворкінг у Черкасах</title>
 <meta name="description" content="Світлиця — кав’ярня і коворкінг у Черкасах, які створює громадська організація. Твоя кава чи робочий день тут підтримують її справу.">
-<meta name="theme-color" content="#422223">
+<meta name="theme-color" content="#5A3E38">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,22 +18,31 @@
    ═══════════════════════════════════════════════════════════════════ */
 :root{
   /* колір */
-  --c-ink:#351B1B;        --c-paper:#FFFFFF;
-  --c-deep:#422223;
-  --c-sand:#DED7CD;       --c-signal:#F85830;
-  --c-forest:#374120;
-  --c-surface:#F7F4F1;    --c-surface-2:#EFE9E3;
-  --c-graphite:#5C4A47;   --c-mute:#9F9089;
-  --c-line:#E2DAD3;       --c-rule:#351B1B;
-  --c-signal-press:#D93208; --c-sand-deep:#BFB3A6;
-  --c-alert:#C4251F;
-  --c-selection:rgba(248,88,48,.22);
+  /* Фірмова родина збережена (тепла маруна + пісок), але полегшена:
+     темні заливки підняті з L*17.6 до L*29, акцент із неонового F85830
+     переведено в теракоту, а signal-секція тепер тінт, а не повна заливка.
+     Середній L* заливкових секцій: 28.0 → 44.5. */
+  --c-ink:#3E2B27;        --c-paper:#FCFAF7;
+  --c-deep:#5A3E38;
+  --c-sand:#E7DDD1;       --c-signal:#E2603A;
+  --c-forest:#5E6A45;
+  --c-surface:#F5F1EB;    --c-surface-2:#ECE5DB;
+  --c-graphite:#6E5A53;   --c-mute:#C6BAB2;   /* mute живе тільки на темному */
+  --c-line:#E5DDD3;       --c-rule:#3E2B27;
+  --c-signal-press:#BE4A28; --c-sand-deep:#C8BBAB;
+  --c-signal-deep:#A83F1E;  /* press-стан суцільної кнопки */
+  --c-signal-lift:#F0835F;  /* акцент на темному тлі: на deep 3.72 ✅ */
+  --c-signal-soft:#F6DFD4;  /* тло signal-секції: ink на ньому 10.4 ✅ */
+  --c-alert:#B3342C;
+  --c-selection:rgba(226,96,58,.20);
   /* скло — рецепт misto.cafe: колір + внутрішній волосяний глоу, без падаючої тіні */
-  /* misto тримає .4; над нашим кадром це 3.96 для ink — .55 дає 5.28 ✅ */
-  --blur-color:rgba(222,215,205,.55);
-  --blur-hover-color:rgba(198,186,172,.64);
-  --btn-tint:rgba(53,27,27,.07);
-  --blur-glow-color:rgba(255,252,247,.30);
+  /* Заміряно по реальному кадру: у 5%% найтемніших ділянок верху hero
+     .55 давало ink лише 3.75 ⛔ (ink посвітлішав разом із палітрою).
+     .64 піднімає цей найгірший випадок до 4.68 ✅, медіану — до 5.83. */
+  --blur-color:rgba(231,221,209,.64);
+  --blur-hover-color:rgba(214,201,186,.74);
+  --btn-tint:rgba(62,43,39,.07);
+  --blur-glow-color:rgba(255,253,250,.32);
   --glass-bg:var(--blur-color);
 
   /* типографіка */
@@ -67,7 +76,7 @@
   --r-xs:4px; --r-sm:6px; --r-md:12px;
   --r-lg:24px; --r-xl:40px; --r-full:9999px;
   --blur-size:30px;
-  --shadow-float:0 8px 32px rgba(53,27,27,.10);
+  --shadow-float:0 8px 32px rgba(62,43,39,.09);
   --outline-width:2px; --outline-offset:4px;
 
   /* моушн */
@@ -139,9 +148,12 @@ a{color:inherit}
 .t-light  h1,.t-light  h2,.t-light  h3{color:var(--c-ink)}
 .t-dark  {background:var(--c-deep);  color:var(--c-paper)}
 .t-dark   h1,.t-dark   h2,.t-dark   h3{color:var(--c-sand)}
-.t-signal{background:var(--c-signal);color:var(--c-ink)}
-/* §2.3: sand на signal = 2.47 ⛔. Заголовки signal-секції — ink (4.56 ✅).
-   sand допускається лише там, де під ним forest/ink (mega-цифра, картки). */
+/* signal-секція — тінт акценту, а не повна заливка: суцільний помаранч на
+   всю висоту секції і був головним джерелом «важкості». Акцент лишається
+   один на сторінку, просто звучить тихіше. */
+.t-signal{background:var(--c-signal-soft);color:var(--c-ink)}
+/* ink на signal-soft = 10.4 ✅, graphite = 5.05 ✅.
+   sand допускається лише там, де під ним forest/deep (mega-цифра, картки). */
 .t-signal h1,.t-signal h2,.t-signal h3{color:var(--c-ink)}
 .t-forest{background:var(--c-forest);color:var(--c-paper)}
 .t-forest h1,.t-forest h2,.t-forest h3{color:var(--c-sand)}
@@ -197,8 +209,10 @@ h3,.u-h3{font-size:var(--t-h3);line-height:1.3;letter-spacing:-.01em}
 .f-btn:disabled,.f-btn.is-disabled{opacity:.5;pointer-events:none}
 
 /* варіанти — самі змінні, нічого більше */
-.f-btn--solid  {--btn-bg:var(--c-signal);--btn-color:var(--c-paper);
-                --btn-hover-bg:var(--c-signal-press)}
+/* суцільна кнопка бере темнішу теракоту: paper на ній 4.80 ✅
+   (на світлому --c-signal було б 3.38 — замало для 16px тексту) */
+.f-btn--solid  {--btn-bg:var(--c-signal-press);--btn-color:var(--c-paper);
+                --btn-hover-bg:var(--c-signal-deep)}
 .f-btn--surface{--btn-bg:var(--c-surface);--btn-color:var(--c-ink);
                 --btn-hover-bg:var(--c-surface-2)}
 .f-btn--ghost  {--btn-bd:currentColor;--btn-hover-bg:var(--btn-tint)}
@@ -239,7 +253,7 @@ h3,.u-h3{font-size:var(--t-h3);line-height:1.3;letter-spacing:-.01em}
   transition:width var(--dur) var(--ease),height var(--dur) var(--ease),
              margin var(--dur) var(--ease),background var(--dur) var(--ease);
 }
-.cursor-ring.is-hot{width:58px;height:58px;margin:-29px 0 0 -29px;background:rgba(248,88,48,.16)}
+.cursor-ring.is-hot{width:58px;height:58px;margin:-29px 0 0 -29px;background:rgba(226,96,58,.16)}
 @media (hover:none),(pointer:coarse){.cursor,.cursor-ring{display:none}}
 
 .skip{
@@ -261,7 +275,7 @@ h3,.u-h3{font-size:var(--t-h3);line-height:1.3;letter-spacing:-.01em}
 }
 .loader__bar{
   position:absolute;left:0;bottom:0;height:2px;width:100%;
-  background:var(--c-signal);transform:scaleX(0);transform-origin:0 50%;
+  background:var(--c-signal-lift);transform:scaleX(0);transform-origin:0 50%;
 }
 html.is-loaded .loader{display:none}
 
@@ -425,8 +439,8 @@ html:not(.js) .rule{transform:none}
      Колір скриму — маруна, десатурована з 32%% до 14%% при сталій
      люмінантності, тому контрасти не змінились, а червоний налив удвічі слабший. */
   background:
-    linear-gradient(180deg,rgba(53,40,40,.44) 0%,rgba(53,40,40,.32) 34%,
-                    rgba(53,40,40,.74) 74%,rgba(53,40,40,.94) 100%);
+    linear-gradient(180deg,rgba(74,58,54,.38) 0%,rgba(74,58,54,.26) 34%,
+                    rgba(74,58,54,.72) 74%,rgba(74,58,54,.92) 100%);
 }
 .hero__inner{display:flex;flex-direction:column;gap:var(--block-gap)}
 .hero__title{color:var(--c-sand);max-width:16ch}
@@ -440,7 +454,8 @@ html:not(.js) .rule{transform:none}
   display:flex;flex-wrap:wrap;align-items:center;
   gap:var(--s-5) var(--s-8);
 }
-.hero__note{color:var(--c-sand-deep);font-size:var(--t-caption)}
+/* sand, не sand-deep: на найсвітліших 5%% кадру sand-deep давав 3.59 ⛔ */
+.hero__note{color:var(--c-sand);opacity:.86;font-size:var(--t-caption)}
 @media (min-width:1024px){
   .hero__inner{display:grid;grid-template-columns:1fr auto;align-items:end;
     gap:var(--block-gap) var(--s-16)}
@@ -455,7 +470,7 @@ html:not(.js) .rule{transform:none}
 }
 .hero__cue::after{
   content:"";position:absolute;left:50%;bottom:0;translate:-50% 0;
-  width:5px;height:5px;border-radius:var(--r-full);background:var(--c-signal);
+  width:5px;height:5px;border-radius:var(--r-full);background:var(--c-signal-lift);
   animation:cueDrop 2.4s var(--ease) infinite;
 }
 @keyframes cueDrop{
@@ -540,7 +555,7 @@ html:not(.js) .rule{transform:none}
   background:var(--c-signal);flex:none;margin-top:.45em;
 }
 .chain__arrow{
-  width:32px;height:32px;flex:none;color:var(--c-signal);
+  width:32px;height:32px;flex:none;color:var(--c-signal-lift);
   margin-left:var(--s-8);
   transform:rotate(90deg);
 }
@@ -595,7 +610,7 @@ html:not(.js) .rule{transform:none}
 .card::after{
   content:"";position:absolute;right:-30%;top:-30%;
   width:70%;aspect-ratio:1;border-radius:var(--r-full);
-  background:rgba(222,215,205,.07);
+  background:rgba(231,221,209,.08);
   transform:scale(.4);opacity:0;
   transition:transform var(--dur-slow) var(--ease),opacity var(--dur-slow) var(--ease);
 }
@@ -700,17 +715,17 @@ html:not(.js) .rule{transform:none}
 }
 .foot__scrim{
   position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(180deg,rgba(53,40,40,.64),rgba(53,40,40,.93));
+  background:linear-gradient(180deg,rgba(74,58,54,.58),rgba(74,58,54,.90));
 }
 /* Паралакс-збірка вмісту футера всередині overflow:hidden (misto.cafe) */
 .foot__reveal{overflow:hidden}
 .foot__grid{display:flex;flex-direction:column;gap:var(--block-gap)}
 .foot h2{font-size:var(--t-display-2);line-height:.93;letter-spacing:-.02em;max-width:9ch}
-.foot__note{color:var(--c-sand-deep);font-size:var(--t-lead);max-width:34ch}
+.foot__note{color:var(--c-sand);opacity:.9;font-size:var(--t-lead);max-width:34ch}
 .foot__meta{
   display:flex;flex-wrap:wrap;gap:var(--s-4) var(--s-8);
   align-items:baseline;justify-content:space-between;
-  padding-top:var(--s-8);border-top:1px solid rgba(222,215,205,.24);
+  padding-top:var(--s-8);border-top:1px solid rgba(231,221,209,.22);
   color:var(--c-mute);font-size:var(--t-caption);
 }
 .foot__org{color:var(--c-paper);font-size:var(--t-body-s)}
@@ -918,7 +933,7 @@ html.js .dirs__num{opacity:0}
   <!-- P6 · хвиляста межа dark → signal -->
   <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
     <path d="M0,28 C240,4 480,52 720,36 C960,20 1200,0 1440,16 L1440,60 L0,60 Z"
-          fill="var(--c-signal)"/>
+          fill="var(--c-signal-soft)"/>
   </svg>
 </section>
 
@@ -1278,11 +1293,15 @@ html.js .dirs__num{opacity:0}
   if (claim){
     var cw = splitWords(claim);
     gsap.set(cw, {y:0, yPercent:0});
+    /* кольори беремо з токенів, щоб зміна палітри не лишала тут старі хекси */
+    var cs = getComputedStyle(document.documentElement);
+    var C_INK = cs.getPropertyValue('--c-ink').trim();
+    var C_GRA = cs.getPropertyValue('--c-graphite').trim();
     if (REDUCED){
-      gsap.set(cw, {color:'#351B1B'});
+      gsap.set(cw, {color:C_INK});
     } else {
-      gsap.fromTo(cw, {color:'#5C4A47'}, {
-        color:'#351B1B', ease:'none', stagger:.4,
+      gsap.fromTo(cw, {color:C_GRA}, {
+        color:C_INK, ease:'none', stagger:.4,
         scrollTrigger:{trigger:claim, start:'top 78%', end:'bottom 62%', scrub:.6}
       });
     }
