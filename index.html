@@ -745,28 +745,36 @@ html:not(.js) .rule{transform:none}
 /* 5 колонок лише з 1024px — на 768 плитка 112px ріже довгі імена */
 @media (min-width:1024px){.partners__grid{grid-template-columns:repeat(5,1fr);gap:var(--s-8) var(--s-6)}}
 
-/* ── Телефон: стрічка зі свайпом замість сітки 2×5 ────────────────────
-   Сіткою цей блок займав 1317px — 18.7% усього мобільного скролу,
-   більше за будь-яку секцію з реальним змістом, і це демонстраційні
-   профілі. Стрічка згортає його приблизно вп'ятеро й додає жест.
+/* ── Телефон: самохідна стрічка замість сітки 2×5 ─────────────────────
+   Сіткою блок займав 1317px — 18.7% усього мобільного скролу, більше за
+   будь-яку секцію з реальним змістом, і це демонстраційні профілі.
+   Перша спроба — стрічка зі свайпом — була коротша, але не читалась:
+   нерухомий ряд облич не виглядає як щось, що гортають. Тепер він їде
+   сам, тож здогадуватись нема про що, а потягнути пальцем однаково
+   можна — рух просто зупиняється під пальцем.
    Від'ємні поля рівно на padding контейнера виводять стрічку під зріз
-   екрана, але перша плитка лишається на одній вертикалі з текстом. */
+   екрана; overflow ріже по краю самого екрана. */
 @media (max-width:767px){
-  .partners__grid{
-    display:flex;grid-template-columns:none;
-    gap:var(--s-5);
-    overflow-x:auto;overscroll-behavior-x:contain;
-    scroll-snap-type:x proximity;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
+  .partners__viewport{
+    overflow:hidden;
     margin-inline:calc(var(--container-pad) * -1);
     padding-inline:var(--container-pad);
-    padding-bottom:var(--s-2);
-    scroll-padding-left:var(--container-pad);
+    /* горизонтальне тягання наше, вертикальний скрол лишається браузеру */
+    touch-action:pan-y;
+    cursor:grab;
   }
-  .partners__grid::-webkit-scrollbar{display:none}
-  .partner{flex:0 0 min(42vw,190px);scroll-snap-align:start}
-  /* видимий шматок наступної плитки — сам собі натяк, що тут гортають */
+  .partners__viewport:active{cursor:grabbing}
+  .partners__grid{
+    display:flex;grid-template-columns:none;
+    width:max-content;
+    /* gap не годиться: для безшовної петлі доріжка має ділитись рівно
+       навпіл, а gap ставиться лише МІЖ елементами — після останнього
+       його немає, і половина доріжки виходила коротшою на пів проміжку.
+       margin-right на кожній плитці робить крок однаковим. */
+    gap:0;
+    padding-bottom:var(--s-2);
+  }
+  .partner{flex:0 0 min(42vw,190px);margin-right:var(--s-5)}
 }
 .partner{display:flex;flex-direction:column;gap:var(--s-4);--tile-focus:0}
 .partner__tile{
@@ -800,7 +808,7 @@ html:not(.js) .rule{transform:none}
    --tile-focus: 1 для плитки в центрі стрічки, 0 на краях. Плитка
    вирівнюється, набирає насиченість і фірмовий тон — рівно те, що на
    десктопі робив hover, тільки веде його свайп. */
-@media (hover:none){
+@media (max-width:767px){
   .partner__tile{
     transform:rotate(calc(-1.6deg * (1 - var(--tile-focus))))
               scale(calc(1 + .02 * var(--tile-focus)));
@@ -1199,6 +1207,7 @@ html.js .dirs__num{opacity:0}
     <h2 class="js-split">Партнери Світлиці</h2>
     <p class="partners__note u-caption" style="margin-top:var(--h2-gap)">Демонстраційні профілі. Імена й портрети вигадані.</p>
 
+    <div class="partners__viewport">
     <ul class="partners__grid">
       <li class="partner js-tile"><div class="partner__tile" style="--c:0;--r:0"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Олена Коваль</span></li>
       <li class="partner js-tile"><div class="partner__tile" style="--c:1;--r:0"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Андрій Левченко</span></li>
@@ -1211,6 +1220,7 @@ html.js .dirs__num{opacity:0}
       <li class="partner js-tile"><div class="partner__tile" style="--c:3;--r:1"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Наталія Мороз</span></li>
       <li class="partner js-tile"><div class="partner__tile" style="--c:4;--r:1"><img src="assets/images/partners-demo.webp" width="1536" height="1024" alt="" loading="lazy"></div><span class="partner__name u-h4">Максим Поліщук</span></li>
     </ul>
+    </div>
   </div>
 </section>
 
@@ -1534,48 +1544,6 @@ html.js .dirs__num{opacity:0}
       });
     });
 
-    /* D · стрічка партнерів: плитка в центрі кадру вирівнюється й набирає
-       колір. Рахуємо відстань від центру стрічки, а не тримаємо тригер
-       на кожній з десяти плиток — один слухач на контейнер, значення
-       кладемо у CSS-змінну, малює CSS. */
-    var strip = document.querySelector('.partners__grid');
-    var stripTiles = strip ? gsap.utils.toArray('.partner', strip) : [];
-    var hadTabindex = strip && strip.hasAttribute('tabindex');
-    var lastPaint = 0;
-
-    /* Спершу читаємо всі прямокутники, потім усі пишемо. Якщо міряти й
-       писати в одному циклі, кожен запис скидає лейаут і наступний
-       getBoundingClientRect змушує браузер рахувати його наново —
-       десять разів за кадр на самому скролі. */
-    function paintStrip(){
-      var box = strip.getBoundingClientRect();
-      var mid = box.left + box.width / 2;
-      var reach = box.width / 2 || 1;
-      var k = stripTiles.map(function(t){
-        var r = t.getBoundingClientRect();
-        return Math.max(0, 1 - Math.abs((r.left + r.width / 2) - mid) / reach);
-      });
-      stripTiles.forEach(function(t, i){
-        t.style.setProperty('--tile-focus', k[i].toFixed(3));
-      });
-    }
-    /* Малюємо синхронно, з обмеженням «не частіше за кадр». Події скролу
-       на тачі й так не йдуть частіше, а rAF тут був би зайвою ланкою. */
-    function onStripScroll(){
-      var now = performance.now();
-      if (now - lastPaint < 16) return;
-      lastPaint = now;
-      paintStrip();
-    }
-
-    if (strip && stripTiles.length){
-      /* контейнер зі скролом має бути досяжним із клавіатури */
-      if (!hadTabindex) strip.setAttribute('tabindex', '0');
-      strip.addEventListener('scroll', onStripScroll, {passive:true});
-      window.addEventListener('resize', onStripScroll, {passive:true});
-      paintStrip();
-    }
-
     /* E · хедер ховається при скролі вниз, вертається при скролі вгору.
        На 390px він тримає 64px постійно — це 7.6% екрана, найдорожчий
        відсоток на телефоні. Поріг у 6px, щоб пігулка не смикалась від
@@ -1614,13 +1582,109 @@ html.js .dirs__num{opacity:0}
       lit.forEach(function(st){ st.kill(); });
       window.removeEventListener('scroll', onPageScroll);
       root.classList.remove('nav-tucked');
-      if (strip){
-        strip.removeEventListener('scroll', onStripScroll);
-        window.removeEventListener('resize', onStripScroll);
-        if (!hadTabindex) strip.removeAttribute('tabindex');
-        stripTiles.forEach(function(t){ t.style.removeProperty('--tile-focus'); });
-      }
 
+    };
+  });
+
+  /* ── Стрічка партнерів: їде сама, зупиняється під пальцем ──────────
+     Нерухомий ряд облич не читається як щось, що гортають, — свайпу там
+     ніхто не шукає. Рухома стрічка знімає питання: здогадуватись нема
+     про що, а потягнути однаково можна. */
+  gsap.matchMedia().add('(max-width:767px)', function(){
+    var view  = document.querySelector('.partners__viewport');
+    var track = document.querySelector('.partners__grid');
+    if (!view || !track) return;
+    var originals = gsap.utils.toArray('.partner', track);
+    if (!originals.length) return;
+
+    /* Без руху стрічка стала б глухим кутом, тому при reduced-motion
+       повертаємо звичайну сітку 2×5 — статичну, але повністю видиму. */
+    if (REDUCED){
+      track.style.display = 'grid';
+      track.style.gridTemplateColumns = 'repeat(2,1fr)';
+      track.style.width = 'auto';
+      track.style.gap = 'var(--s-6) var(--s-4)';
+      originals.forEach(function(t){ t.style.margin = '0'; t.style.flex = 'none'; });
+      return function(){
+        track.removeAttribute('style');
+        originals.forEach(function(t){ t.removeAttribute('style'); });
+      };
+    }
+
+    /* Друга копія плиток: доріжка зсувається рівно на половину себе,
+       і в точці петлі кадр збігається сам із собою. */
+    var clones = originals.map(function(t){
+      var c = t.cloneNode(true);
+      c.setAttribute('aria-hidden', 'true');
+      track.appendChild(c);
+      return c;
+    });
+    /* cloneNode тягне за собою й інлайнові стилі, а оригінали на цей
+       момент стоять на opacity:0 від власного reveal-твіна. */
+    gsap.set(clones, {opacity:1, y:0, scale:1});
+    var tiles = originals.concat(clones);
+
+    var loop = gsap.to(track, {
+      xPercent:-50, ease:'none', repeat:-1,
+      duration: originals.length * 3.4      /* ≈62px/с — спокійний дрейф */
+    });
+
+    /* Підсвітка плитки біля центру. Рахуємо в тикері, але через кадр:
+       двадцять плиток на кожному кадрі — зайва робота для телефона.
+       Спершу всі заміри, потім усі записи, щоб не смикати лейаут. */
+    var frame = 0;
+    function paint(){
+      if (frame++ & 1) return;
+      var box = view.getBoundingClientRect();
+      var mid = box.left + box.width / 2;
+      var reach = box.width / 2 || 1;
+      var k = tiles.map(function(t){
+        var r = t.getBoundingClientRect();
+        return Math.max(0, 1 - Math.abs((r.left + r.width / 2) - mid) / reach);
+      });
+      tiles.forEach(function(t, i){
+        t.style.setProperty('--tile-focus', k[i].toFixed(3));
+      });
+    }
+    gsap.ticker.add(paint);
+
+    /* Тягання. Рух лінійний, тому зсув у пікселях перекладається прямо
+       в зсув прогресу, а залишок від ділення лишає петлю нескінченною
+       в обидва боки. */
+    var dragging = false, startX = 0, startP = 0, loopPx = 1;
+    function down(e){
+      dragging = true;
+      startX = e.clientX;
+      startP = loop.progress();
+      loopPx = track.offsetWidth / 2 || 1;   /* offsetWidth, не rect: rect уже з трансформом */
+      loop.pause();
+      try { view.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    function move(e){
+      if (!dragging) return;
+      var p = (startP + (startX - e.clientX) / loopPx) % 1;
+      loop.progress(p < 0 ? p + 1 : p);
+    }
+    function up(){
+      if (!dragging) return;
+      dragging = false;
+      loop.play();
+    }
+    view.addEventListener('pointerdown', down);
+    view.addEventListener('pointermove', move);
+    view.addEventListener('pointerup', up);
+    view.addEventListener('pointercancel', up);
+
+    return function(){
+      gsap.ticker.remove(paint);
+      loop.kill();
+      view.removeEventListener('pointerdown', down);
+      view.removeEventListener('pointermove', move);
+      view.removeEventListener('pointerup', up);
+      view.removeEventListener('pointercancel', up);
+      clones.forEach(function(c){ c.remove(); });
+      gsap.set(track, {clearProps:'all'});
+      originals.forEach(function(t){ t.style.removeProperty('--tile-focus'); });
     };
   });
 
