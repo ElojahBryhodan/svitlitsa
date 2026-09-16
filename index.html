@@ -76,6 +76,9 @@
   --r-xs:4px; --r-sm:6px; --r-md:12px;
   --r-lg:24px; --r-xl:40px; --r-full:9999px;
   --blur-size:30px;
+  /* Радіус блюру — покадрова робота GPU під липким хедером. На тачі
+     ріжемо його майже вдвічі: на композит кольору радіус не впливає,
+     тому всі пораховані контрасти лишаються ті самі. */
   --shadow-float:0 8px 32px rgba(62,43,39,.09);
   --outline-width:2px; --outline-offset:4px;
 
@@ -87,6 +90,7 @@
   --clip-quad-a:polygon(2% 6%,97% 0%,100% 92%,5% 100%);
   --clip-quad-b:polygon(0% 3%,94% 7%,100% 96%,6% 91%);
 }
+@media (hover:none){:root{--blur-size:18px}}
 @media (min-width:640px){:root{
   --container-pad:48px; --section-py:64px;
   --block-gap:48px; --h2-gap:40px; --hero-top:96px;
@@ -124,6 +128,8 @@ body{
   font-size:var(--t-body);line-height:1.55;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
+  /* iOS малює свій сірий прямокутник поверх наших станів */
+  -webkit-tap-highlight-color:transparent;
 }
 img{max-width:100%;display:block}
 h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0}
@@ -140,7 +146,11 @@ a{color:inherit}
 .t-dark :focus-visible,.t-ink :focus-visible{outline-color:var(--c-sand)}
 .t-signal :focus-visible{outline-color:var(--c-ink)}
 
-.l-container{max-width:var(--container-max);margin-inline:auto;padding-inline:var(--container-pad)}
+.l-container{
+  max-width:var(--container-max);margin-inline:auto;
+  padding-left:max(var(--container-pad), env(safe-area-inset-left, 0px));
+  padding-right:max(var(--container-pad), env(safe-area-inset-right, 0px));
+}
 .c-section{padding-block:var(--section-py);position:relative}
 
 /* теми */
@@ -203,6 +213,23 @@ h3,.u-h3{font-size:var(--t-h3);line-height:1.3;letter-spacing:-.01em}
     color:var(--btn-hover-color,var(--btn-color));
     border-color:var(--btn-hover-bd,var(--btn-bd));
   }
+}
+/* ── Тач-фідбек ───────────────────────────────────────────────────────
+   На дотику hover не існує, тому єдиний сигнал «натиснуто» — :active.
+   Без нього тап відчувається мертвим: палець піднявся, а нічого не
+   ворухнулось. Беремо ту саму пару кольорів, що й hover, плюс коротке
+   стиснення — і вдвічі швидший перехід, щоб відгук встигав за пальцем. */
+a.f-btn:active,button.f-btn:active{
+  --blur-color:var(--blur-hover-color);
+  background-color:var(--btn-hover-bg,var(--btn-bg));
+  color:var(--btn-hover-color,var(--btn-color));
+  border-color:var(--btn-hover-bd,var(--btn-bd));
+  transition-duration:90ms;
+}
+@media (hover:none){
+  a.f-btn:active,button.f-btn:active{transform:scale(.97)}
+  /* .js-magnetic на тачі не чіпає transform — магнітний курсор живе
+     лише під (hover:hover) and (pointer:fine), тож конфлікту немає. */
 }
 .f-btn:disabled,.f-btn.is-disabled{opacity:.5;pointer-events:none}
 
@@ -281,10 +308,27 @@ html.is-loaded .loader{display:none}
    4 · C2 · НАВІГАЦІЯ
    ═══════════════════════════════════════════════════════════════════ */
 .nav{
-  position:fixed;top:var(--header-offset);left:0;right:0;z-index:9200;
-  padding-inline:var(--container-pad);
+  position:fixed;left:0;right:0;z-index:9200;
+  /* env(safe-area-*) — бо в <meta viewport> стоїть viewport-fit=cover:
+     без цього на айфонах із вирізом пігулка лізе під системний рядок,
+     а в альбомній орієнтації — під сам виріз. */
+  top:calc(var(--header-offset) + env(safe-area-inset-top, 0px));
+  padding-left:max(var(--container-pad), env(safe-area-inset-left, 0px));
+  padding-right:max(var(--container-pad), env(safe-area-inset-right, 0px));
   pointer-events:none;
+  transition:transform .32s var(--ease);
 }
+/* Ховається при скролі вниз, вертається при скролі вгору — так поводяться
+   нативні застосунки, і це повертає 64px висоти екрана там, де його
+   найменше. Розгорнуте меню завжди тримає хедер на місці. */
+/* Зсув у відсотках від власної висоти, без calc() зі змішаними
+   одиницями: -150% гарантовано виводить пігулку за верхній зріз при
+   будь-якому safe-area-inset, зокрема в альбомній орієнтації. */
+html.nav-tucked .nav{transform:translateY(-150%)}
+/* Фокус усередині хедера завжди повертає його на екран: інакше
+   клавіатурна навігація вела б на невидимий елемент. */
+html.nav-tucked .nav:focus-within{transform:none}
+@media (prefers-reduced-motion:reduce){.nav{transition:none}}
 /* Скло misto.cafe: ::before із backdrop-filter, колір і внутрішній волосяний
    глоу. Падаючої тіні немає — глибину дає лише глоу по внутрішньому краю. */
 .u-blur{position:relative}
@@ -395,7 +439,10 @@ html:not(.js).menu-open .menu{height:auto}
   fill:none;transition:transform var(--dur) var(--ease)}
 .btn:hover .btn__dot{width:40px;height:40px}
 .btn:hover .btn__dot svg{transform:translateY(2px)}
-.btn:active{background:var(--c-surface-2)}
+/* той самий ріст кружка на тапі; суцільного тла тут більше немає —
+   воно вбивало скло на єдиній скляній CTA сторінки */
+.btn:active .btn__dot{width:40px;height:40px}
+.btn:active .btn__dot svg{transform:translateY(2px)}
 
 /* ═══════════════════════════════════════════════════════════════════
    6 · ДЕКОР
@@ -489,19 +536,23 @@ html:not(.js) .rule{transform:none}
 .model__h2{margin-bottom:var(--h2-gap)}
 .model__claim{max-width:16ch;color:var(--c-graphite)}
 .model__grid{display:grid;gap:var(--block-gap)}
-.model__deco{display:none}
+/* Розетка тепер і на телефоні. Це найкраща анімація сторінки — мотив
+   обертається рівно між двома фірмовими варіантами, прямим і косим, —
+   а бачив її досі тільки десктоп, тобто 10% користувачів. */
+.model__deco{display:block;justify-self:center;overflow:hidden;width:100%}
 @media (min-width:1024px){
   .model__grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);
                gap:var(--s-16);align-items:center}
   .model__claim{max-width:none}
-  .model__deco{display:block;justify-self:center;overflow:hidden;width:100%}
 }
 /* розетка */
 /* квадратна рамка 598 із запасом: півдіагональ мотиву 277 + 22 */
-/* Ширина від колонки, не від vw. Повернутий на 45° квадрат розширює
-   габарит у √2, тому колонка обрізає порожні поля рамки — мотив
-   займає 65% рамки, отже навіть при 45° лишається всередині. */
-.orn{display:block;width:100%;max-width:470px;height:auto}
+/* Повернутий на 45° квадрат розширює габарит у √2, тому рамка обрізає
+   свої порожні поля — мотив займає 65% рамки, отже 0.65×√2 = 0.92
+   ширини, і навіть при 45° він не дістає до країв на жодній ширині. */
+.orn{display:block;width:min(58vw,260px);max-width:100%;height:auto;
+     margin-inline:auto}
+@media (min-width:1024px){.orn{width:100%;max-width:470px}}
 .orn__frame{fill:var(--c-sand-deep)}
 .orn__gem{fill:var(--c-signal)}
 
@@ -515,12 +566,19 @@ html:not(.js) .rule{transform:none}
 @media (min-width:768px){.space__grid{grid-template-columns:1fr 1fr}}
 
 .photo-offset{position:relative;margin:16px 16px 0 0}
+.photo-offset{--slab-turn:-2deg}
 .photo-offset::before{
   content:"";position:absolute;inset:-16px -16px 16px 16px;
-  background:var(--c-signal);transform:rotate(-2deg);z-index:0;
+  background:var(--c-signal);transform:rotate(var(--slab-turn));z-index:0;
   transition:transform var(--dur) var(--ease);
 }
-.photo-offset--deep::before{background:var(--c-deep);transform:rotate(2.4deg)}
+.photo-offset--deep{--slab-turn:2.4deg}
+.photo-offset--deep::before{background:var(--c-deep)}
+/* На тачі кут плити веде скрол, а не hover. Перехід тут заважає: скраб
+   і transition тягнули б ту саму властивість у різні боки. */
+@media (hover:none){
+  .photo-offset::before,.photo-offset img{transition:none}
+}
 /* height:auto обов'язковий: атрибути width і height на картинці лягають
    у presentational hints і дають використану height:800px. Коли обидва
    розміри вже визначені, aspect-ratio ігнорується — і кадр ставав
@@ -528,12 +586,13 @@ html:not(.js) .rule{transform:none}
 .photo-offset img{
   position:relative;z-index:1;display:block;width:100%;height:auto;
   aspect-ratio:3/2;object-fit:cover;border-radius:var(--r-md);
+  transform:scale(var(--photo-zoom,1));
   transition:transform var(--dur-slow) var(--ease),filter var(--dur-slow) var(--ease);
 }
 .space__card{display:flex;flex-direction:column;gap:var(--s-5)}
 .space__card:hover .photo-offset::before{transform:rotate(-3.6deg) scale(1.02)}
 .space__card--b:hover .photo-offset::before{transform:rotate(4deg) scale(1.02)}
-.space__card:hover .photo-offset img{transform:scale(1.015)}
+.space__card:hover .photo-offset img{--photo-zoom:1.015}
 .space__body{display:flex;flex-direction:column;gap:var(--s-3);padding-top:var(--s-3)}
 .space__body p{color:var(--c-graphite)}
 
@@ -624,7 +683,9 @@ html:not(.js) .rule{transform:none}
   transform:scale(.4);opacity:0;
   transition:transform var(--dur-slow) var(--ease),opacity var(--dur-slow) var(--ease);
 }
-.card:hover::after{transform:scale(1);opacity:1}
+/* is-lit вішає скрол-тригер на тачі — без нього ці чотири картки
+   на телефоні лишались повністю нерухомими. */
+.card:hover::after,.card.is-lit::after{transform:scale(1);opacity:1}
 
 /* ═══════════════════════════════════════════════════════════════════
    12 · #trust  (C8 + C5 + C7)
@@ -651,7 +712,7 @@ html:not(.js) .rule{transform:none}
   min-height:44px;
   transition:color var(--dur) var(--ease);
 }
-.acc__btn:hover{color:var(--c-signal-press)}
+.acc__btn:hover,.acc__btn:active{color:var(--c-signal-press)}
 .acc__q{flex:1 1 auto}
 .acc__ind{
   position:relative;width:24px;height:24px;flex:none;margin-top:.22em;
@@ -683,7 +744,31 @@ html:not(.js) .rule{transform:none}
 }
 /* 5 колонок лише з 1024px — на 768 плитка 112px ріже довгі імена */
 @media (min-width:1024px){.partners__grid{grid-template-columns:repeat(5,1fr);gap:var(--s-8) var(--s-6)}}
-.partner{display:flex;flex-direction:column;gap:var(--s-4)}
+
+/* ── Телефон: стрічка зі свайпом замість сітки 2×5 ────────────────────
+   Сіткою цей блок займав 1317px — 18.7% усього мобільного скролу,
+   більше за будь-яку секцію з реальним змістом, і це демонстраційні
+   профілі. Стрічка згортає його приблизно вп'ятеро й додає жест.
+   Від'ємні поля рівно на padding контейнера виводять стрічку під зріз
+   екрана, але перша плитка лишається на одній вертикалі з текстом. */
+@media (max-width:767px){
+  .partners__grid{
+    display:flex;grid-template-columns:none;
+    gap:var(--s-5);
+    overflow-x:auto;overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    margin-inline:calc(var(--container-pad) * -1);
+    padding-inline:var(--container-pad);
+    padding-bottom:var(--s-2);
+    scroll-padding-left:var(--container-pad);
+  }
+  .partners__grid::-webkit-scrollbar{display:none}
+  .partner{flex:0 0 min(42vw,190px);scroll-snap-align:start}
+  /* видимий шматок наступної плитки — сам собі натяк, що тут гортають */
+}
+.partner{display:flex;flex-direction:column;gap:var(--s-4);--tile-focus:0}
 .partner__tile{
   position:relative;aspect-ratio:1;overflow:hidden;
   clip-path:var(--clip-quad-a);
@@ -710,12 +795,35 @@ html:not(.js) .rule{transform:none}
 .partner:hover .partner__tile{transform:rotate(0deg) scale(1.02)}
 .partner:hover .partner__tile img{filter:saturate(1) contrast(1) brightness(1)}
 .partner:hover .partner__tile::after{opacity:.24}
+
+/* ── Той самий ефект, але від пальця ──────────────────────────────────
+   --tile-focus: 1 для плитки в центрі стрічки, 0 на краях. Плитка
+   вирівнюється, набирає насиченість і фірмовий тон — рівно те, що на
+   десктопі робив hover, тільки веде його свайп. */
+@media (hover:none){
+  .partner__tile{
+    transform:rotate(calc(-1.6deg * (1 - var(--tile-focus))))
+              scale(calc(1 + .02 * var(--tile-focus)));
+    transition:none;
+  }
+  .partner:nth-child(even) .partner__tile{
+    transform:rotate(calc(1.8deg * (1 - var(--tile-focus))))
+              scale(calc(1 + .02 * var(--tile-focus)));
+  }
+  .partner__tile img{
+    filter:saturate(calc(.9 + .1 * var(--tile-focus)))
+           contrast(calc(1.02 - .02 * var(--tile-focus)));
+    transition:none;
+  }
+  .partner__tile::after{opacity:calc(.24 * var(--tile-focus));transition:none}
+}
 .partner__name{color:var(--c-sand);font-size:clamp(1rem,1.6vw,1.5rem)}
 
 /* ═══════════════════════════════════════════════════════════════════
    13 · ФУТЕР
    ═══════════════════════════════════════════════════════════════════ */
-.foot{position:relative;overflow:hidden;isolation:isolate}
+.foot{position:relative;overflow:hidden;isolation:isolate;
+  padding-bottom:calc(var(--section-py) + env(safe-area-inset-bottom, 0px))}
 .foot__media{position:absolute;inset:0;z-index:-2}
 .foot__media img{
   width:100%;height:100%;object-fit:cover;
@@ -1322,11 +1430,15 @@ html.js .dirs__num{opacity:0}
   }
 
   /* ── Розетка в #model: хрест повертається на 45° і стає косим ─────── */
-  /* matchMedia, бо нижче 1024 розетка display:none — її тригер рахувався
-     з нульових координат і давав від'ємний діапазон. */
-  gsap.matchMedia().add('(min-width:1024px)', function(){
+  /* Раніше тут стояв matchMedia('(min-width:1024px)'), бо нижче розетка
+     була display:none і тригер рахувався з нульових координат. Тепер
+     вона видима на всіх ширинах, тому обмеження зняте; лишилась перевірка
+     на випадок, якщо її колись знову сховають. Міряємо саме bbox:
+     offsetParent на SVGElement не існує взагалі й дає undefined, через
+     що перша версія цієї перевірки глушила всю анімацію. */
+  (function(){
     var orn = document.querySelector('.orn');
-    if (!orn) return;
+    if (!orn || orn.getBoundingClientRect().width === 0) return;
     var gems = gsap.utils.toArray(orn.querySelectorAll('.orn__gem'));
     var frame = orn.querySelector('.orn__frame');
 
@@ -1355,8 +1467,148 @@ html.js .dirs__num{opacity:0}
       gsap.fromTo(orn, {rotate:0}, {rotate:45, transformOrigin:'50% 50%', ease:'none',
         scrollTrigger:{trigger:orn, start:'top bottom', end:'bottom 30%', scrub:.7}});
     }
-  });
+  })();
 
+
+  /* ── ТАЧ: що на десктопі дає hover, тут дає скрол ──────────────────
+     З 13 правил на :hover на тачі не спрацьовує жодне, крім кнопкових.
+     Тобто 90% користувачів бачили статичну сторінку там, де десктоп
+     отримував десяток мікровзаємодій. Замість наведення — скраб по
+     положенню елемента: палець рухає сторінку, елемент відповідає. */
+  gsap.matchMedia().add('(hover:none)', function(){
+    if (REDUCED) return;
+
+    /* A · кольорова плита за фото довертається, поки картка йде екраном.
+       ::before не твіниться напряму, тому ведемо CSS-змінну, від якої
+       залежить його rotate(). */
+    gsap.utils.toArray('.space__card').forEach(function(card){
+      var slab = card.querySelector('.photo-offset');
+      if (!slab) return;
+      var base = parseFloat(getComputedStyle(slab).getPropertyValue('--slab-turn')) || 0;
+      var o = {t: base};
+      gsap.to(o, {
+        t: base + (base < 0 ? -2.6 : 2.6), ease:'none',
+        onUpdate:function(){ slab.style.setProperty('--slab-turn', o.t.toFixed(2) + 'deg'); },
+        scrollTrigger:{trigger:card, start:'top bottom', end:'bottom top', scrub:.5}
+      });
+      /* B · кадр усередині ледь наближається — дає глибину при прокрутці.
+         Теж через змінну, а не через gsap-трансформ: так само, як плита,
+         і так само перевірено вимірюванням. */
+      var img = card.querySelector('.photo-offset img');
+      if (img){
+        var z = {v:1};
+        gsap.to(z, {
+          v:1.05, ease:'none',
+          onUpdate:function(){ img.style.setProperty('--photo-zoom', z.v.toFixed(4)); },
+          scrollTrigger:{trigger:card, start:'top bottom', end:'bottom top', scrub:.5}
+        });
+      }
+    });
+
+    /* C · світіння на чотирьох картках напрямів: на десктопі це hover,
+       тут — поява в кадрі, з розбіжкою, щоб не спалахнули разом.
+       Явні тригери, не ScrollTrigger.batch: batch віддає onEnter через
+       власне відкладене вікно, і на чотирьох елементах це лише зайва
+       ланка, яку не видно у вимірюванні. */
+    var lit = gsap.utils.toArray('.card').map(function(el){
+      return ScrollTrigger.create({
+        trigger:el, start:'top 88%', once:true,
+        /* Розбіжку дає сама верстка: на телефоні картки стоять у стовпчик
+           і входять у кадр одна за одною. Штучна затримка тут тільки
+           додавала б залежність від тикера. */
+        onEnter:function(){ el.classList.add('is-lit'); }
+      });
+    });
+
+    /* D · стрічка партнерів: плитка в центрі кадру вирівнюється й набирає
+       колір. Рахуємо відстань від центру стрічки, а не тримаємо тригер
+       на кожній з десяти плиток — один слухач на контейнер, значення
+       кладемо у CSS-змінну, малює CSS. */
+    var strip = document.querySelector('.partners__grid');
+    var stripTiles = strip ? gsap.utils.toArray('.partner', strip) : [];
+    var hadTabindex = strip && strip.hasAttribute('tabindex');
+    var lastPaint = 0;
+
+    /* Спершу читаємо всі прямокутники, потім усі пишемо. Якщо міряти й
+       писати в одному циклі, кожен запис скидає лейаут і наступний
+       getBoundingClientRect змушує браузер рахувати його наново —
+       десять разів за кадр на самому скролі. */
+    function paintStrip(){
+      var box = strip.getBoundingClientRect();
+      var mid = box.left + box.width / 2;
+      var reach = box.width / 2 || 1;
+      var k = stripTiles.map(function(t){
+        var r = t.getBoundingClientRect();
+        return Math.max(0, 1 - Math.abs((r.left + r.width / 2) - mid) / reach);
+      });
+      stripTiles.forEach(function(t, i){
+        t.style.setProperty('--tile-focus', k[i].toFixed(3));
+      });
+    }
+    /* Малюємо синхронно, з обмеженням «не частіше за кадр». Події скролу
+       на тачі й так не йдуть частіше, а rAF тут був би зайвою ланкою. */
+    function onStripScroll(){
+      var now = performance.now();
+      if (now - lastPaint < 16) return;
+      lastPaint = now;
+      paintStrip();
+    }
+
+    if (strip && stripTiles.length){
+      /* контейнер зі скролом має бути досяжним із клавіатури */
+      if (!hadTabindex) strip.setAttribute('tabindex', '0');
+      strip.addEventListener('scroll', onStripScroll, {passive:true});
+      window.addEventListener('resize', onStripScroll, {passive:true});
+      paintStrip();
+    }
+
+    /* E · хедер ховається при скролі вниз, вертається при скролі вгору.
+       На 390px він тримає 64px постійно — це 7.6% екрана, найдорожчий
+       відсоток на телефоні. Поріг у 6px, щоб пігулка не смикалась від
+       інерційного дотремтіння. */
+    var root = document.documentElement;
+    var lastY = window.scrollY, tucked = false;
+
+    function tuck(on){
+      if (on === tucked) return;
+      tucked = on;
+      root.classList.toggle('nav-tucked', on);
+    }
+    function onPageScroll(){
+      var y = window.scrollY;
+      var d = y - lastY;
+      if (Math.abs(d) < 6) return;
+      lastY = y;
+      /* Біля верху й при розгорнутому меню хедер завжди на місці.
+         140px — трохи більше за саму пігулку, щоб вона не зникала,
+         щойно палець зрушив сторінку. */
+      if (y < 140 || root.classList.contains('menu-open')) tuck(false);
+      else tuck(d > 0);
+    }
+    window.addEventListener('scroll', onPageScroll, {passive:true});
+
+    return function(){
+      document.querySelectorAll('.card.is-lit').forEach(function(el){
+        el.classList.remove('is-lit');
+      });
+      document.querySelectorAll('.photo-offset').forEach(function(el){
+        el.style.removeProperty('--slab-turn');
+      });
+      document.querySelectorAll('.photo-offset img').forEach(function(el){
+        el.style.removeProperty('--photo-zoom');
+      });
+      lit.forEach(function(st){ st.kill(); });
+      window.removeEventListener('scroll', onPageScroll);
+      root.classList.remove('nav-tucked');
+      if (strip){
+        strip.removeEventListener('scroll', onStripScroll);
+        window.removeEventListener('resize', onStripScroll);
+        if (!hadTabindex) strip.removeAttribute('tabindex');
+        stripTiles.forEach(function(t){ t.style.removeProperty('--tile-focus'); });
+      }
+
+    };
+  });
 
   /* ── C4 · ланцюжок: стагер 120ms ──────────────────────────────────── */
   gsap.fromTo('.js-chain', {opacity:0, y: REDUCED ? 0 : 16},
