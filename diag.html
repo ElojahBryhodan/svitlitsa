@@ -1,0 +1,12 @@
+<body style="margin:0;background:#888">
+<iframe id="f" src="/" style="width:1440px;height:900px;border:0;display:block"></iframe>
+<script>
+const f=document.getElementById('f');
+f.onload=()=>{
+ setTimeout(()=>{const d=f.contentDocument,W=f.contentWindow;
+   W.scrollTo(0, d.getElementById('directions').offsetTop-20);},900);
+ setTimeout(()=>{const W=f.contentWindow;
+   if(W.ScrollTrigger) W.ScrollTrigger.getAll().forEach(s=>{
+     if(s.animation && !s.vars.scrub) s.animation.progress(1);});},2400);
+};
+</script></body>

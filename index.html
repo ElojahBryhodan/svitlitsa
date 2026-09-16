@@ -153,7 +153,7 @@ a{color:inherit}
    один на сторінку, просто звучить тихіше. */
 .t-signal{background:var(--c-signal-soft);color:var(--c-ink)}
 /* ink на signal-soft = 10.4 ✅, graphite = 5.05 ✅.
-   sand допускається лише там, де під ним deep (mega-цифра, картки). */
+   sand допускається лише там, де під ним deep (заголовки карток). */
 .t-signal h1,.t-signal h2,.t-signal h3{color:var(--c-ink)}
 .t-ink{background:var(--c-deep);color:var(--c-paper)}
 .t-ink h1,.t-ink h2,.t-ink h3{color:var(--c-sand)}
@@ -593,15 +593,17 @@ html:not(.js) .rule{transform:none}
   position:relative;display:inline-flex;align-items:center;justify-content:center;
   font-size:var(--t-mega);isolation:isolate;
 }
-/* §9 «великий круг» — тримає sand-цифру (sand на deep = 7.18 ✅).
+/* §9 «великий круг» — акцентний, теракота. Цифра paper: 3.38 при порозі
+   3.0 для великого тексту (мега — мінімум 96px). Коло на тлі секції 2.75:
+   тло тієї ж родини, тому силует тональний, а не різкий — так і задумано.
    Розмір в em від mega, тому на всіх брейкпоїнтах не дістає до H2. */
 .dirs__circle{
   position:absolute;z-index:-1;border-radius:var(--r-full);
-  background:var(--c-deep);
+  background:var(--c-signal);
   width:1.05em;height:1.05em;
   left:50%;top:50%;translate:-50% -50%;
 }
-.dirs__num{color:var(--c-sand);display:block;margin-left:-.06em}
+.dirs__num{color:var(--c-paper);display:block;margin-left:-.06em}
 .dirs__figure h2{max-width:14ch}
 .dirs__cards{display:grid;gap:var(--s-6)}
 @media (min-width:640px){.dirs__cards{grid-template-columns:1fr 1fr}}
