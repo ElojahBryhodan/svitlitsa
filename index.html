@@ -863,8 +863,22 @@ html:not(.js) .rule{transform:none}
    14 · СТАНИ АНІМАЦІЇ (застосовуються лише коли JS+GSAP живі)
    ═══════════════════════════════════════════════════════════════════ */
 html.js .reveal{opacity:0}
-html.js .w{display:inline-block;overflow:hidden;vertical-align:bottom}
-html.js .w__i{display:inline-block;transform:translateY(105%)}
+/* Маска слова мусить бути вищою за рядок, інакше overflow:hidden ріже
+   гліфи. У футері line-height .93 дає рядок 33.5px при тексті 45px —
+   11.5px виносних елементів («р» у «перших») просто зникали.
+   padding розширює саму маску, від'ємний margin повертає розкладку,
+   тому нічого не зсувається; vertical-align:bottom рівняє по margin-box,
+   отже вирівнювання теж лишається те саме. */
+html.js .w{
+  display:inline-block;overflow:hidden;vertical-align:bottom;
+  padding-block:.2em;margin-block:-.2em;
+}
+/* 150%, а не 105%: маска стала вища на .2em згори й знизу, і колишнього
+   зсуву не вистачало, щоб сховати слово до появи. Заміряно по трьох
+   найрізніших заголовках — запас під маскою при 150%: футер +3.5px,
+   hero +11px, звичайний H2 +7.8px. Футер найтісніший, бо в нього
+   line-height .93. */
+html.js .w__i{display:inline-block;transform:translateY(150%)}
 html.js .blob::before{transform:rotate(-1.5deg) scale(0)}
 html.js .dirs__num{opacity:0}
 
@@ -1331,8 +1345,8 @@ html.js .dirs__num{opacity:0}
 
   document.querySelectorAll('.js-split').forEach(function(el){
     el._words = splitWords(el);
-    /* CSS-старт translateY(105%) GSAP читає як px — задаємо yPercent явно */
-    gsap.set(el._words, {y:0, yPercent:105});
+    /* CSS-старт translateY(150%) GSAP читає як px — задаємо yPercent явно */
+    gsap.set(el._words, {y:0, yPercent:150});
   });
 
   var D = REDUCED ? .01 : .6;
